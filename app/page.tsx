@@ -55,11 +55,13 @@ export default function Home() {
     <header className="site-header">
       <a className="brand" href="#top" aria-label="Trở về trang chủ">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Image 
-            src="/logo-thanh-huong.png" 
-            alt="Logo Thanh Hương" 
-            style={{ height: '40px', width: 'auto', objectFit: 'contain' }} 
-          />
+<Image 
+  src="/logo-thanh-huong.png" 
+  alt="Logo Thanh Hương" 
+  width={40} 
+  height={40} 
+  style={{ objectFit: 'contain' }} 
+/>
           <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>TRỞ VỀ VỚI CHÍNH MÌNH</span>
         </div>
       </a>
