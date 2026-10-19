@@ -290,3 +290,7 @@ h1 em, h2 em, h3 em, h4 em, h5 em, h6 em, p em, em, i {
   color: var(--warm-coral) !important;
   font-style: italic !important;
 }
+/* Đổi màu tiêu đề của 2 thẻ sách sang màu Warm Coral */
+.book-card-content h3 {
+  color: var(--warm-coral) !important;
+}
