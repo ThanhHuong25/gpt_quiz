@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image';
 import { useMemo, useState } from "react";
 import {
   BOOKS,
@@ -316,7 +317,7 @@ function BookCover({ variant }: { variant: "clay" | "green" }) {
       <span className="cover-bottom">TRỞ VỀ VỚI CHÍNH MÌNH</span>
     </div>
   );
-}
+} 
 
 function BookCard({
   variant, number, title, subtitle, description, bullets, listPrice, launchPrice, cta
