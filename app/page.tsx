@@ -95,7 +95,7 @@ export default function Home() {
           <div className="art-hill hill-front" />
           <div className="art-leaf leaf-one">✳</div>
           <div className="art-leaf leaf-two">✳</div>
-          <div className="art-quote">“Trở về<br />với mình.”</div>
+          <div className="art-quote">“Trở về<br />với chính mình.”</div>
           <span className="art-caption">A GENTLE WAY BACK</span>
         </div>
       </section>
@@ -319,16 +319,18 @@ export default function Home() {
   );
 }
 
-function BookCover({ variant }: { variant: "clay" | "green" }) {
+function BookCover({ variant }: { variant: "warm-coral" | "teal" }) {
   return (
-    <div className={`book-cover ${variant}`}>
-      <div className="cover-orbit orbit-one" />
-      <div className="cover-orbit orbit-two" />
-      <span className="cover-small">THANH HƯƠNG · THỰC HÀNH NỘI TÂM</span>
-      <span className="cover-title">{variant === "clay" ? "Bản lĩnh\n tĩnh lặng" : "Sổ tay\n vũ trụ cá nhân"}</span>
-      <span className="cover-plant">✳</span>
-      <span className="cover-bottom">TRỞ VỀ VỚI CHÍNH MÌNH</span>
+    <div className={`book-cover ${variant}`} style={{ width: '100%', maxWidth: '280px', display: 'flex', justifyContent: 'center' }}>
+      <Image 
+        src={variant === "clay" ? "/bia-ban-linh-tinh-lang.jpg" : "/bia-so-tay-vu-tru.jpg"} 
+        alt={variant === "clay" ? "Bìa sách Bản lĩnh tĩnh lặng" : "Bìa sách Sổ tay vũ trụ cá nhân"} 
+        width={280} 
+        height={400} 
+        style={{ borderRadius: '8px', objectFit: 'cover', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }} 
+      />
     </div>
+  );
   );
 } 
 
