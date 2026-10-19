@@ -285,3 +285,7 @@ h2 {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
+em, i {
+  color: var(--warm-coral) !important;
+  font-style: italic !important;
+}
