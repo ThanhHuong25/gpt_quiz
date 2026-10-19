@@ -321,17 +321,17 @@ export default function Home() {
 
 function BookCover({ variant }: { variant: "warm-coral" | "teal" }) {
   return (
-    <div className={`book-cover ${variant}`} style={{ width: '100%', maxWidth: '280px', display: 'flex', justifyContent: 'center', background: 'none', border: 'none', boxShadow: 'none' }}>
+    <div style={{ width: '100%', maxWidth: '280px', display: 'flex', justifyContent: 'center' }}>
       <Image 
         src={variant === "warm-coral" ? "/bia-ban-linh-tinh-lang.jpg" : "/bia-so-tay-vu-tru.jpg"} 
         alt={variant === "warm-coral" ? "Bìa sách Bản lĩnh tĩnh lặng" : "Bìa sách Sổ tay vũ trụ cá nhân"} 
         width={280} 
         height={400} 
-        style={{ borderRadius: '8px', objectFit: 'cover', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', display: 'block', width: '100%', height: 'auto' }} 
+        style={{ borderRadius: '8px', objectFit: 'cover', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }} 
       />
     </div>
   );
-} 
+}
 
 function BookCard({
   variant, number, title, subtitle, description, bullets, listPrice, launchPrice, cta
