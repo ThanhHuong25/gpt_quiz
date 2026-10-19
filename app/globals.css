@@ -276,7 +276,7 @@ del { color: #9d9a8e; font-size: 10px; font-weight: 400; }
   .site-footer { flex-wrap: wrap; padding: 22px 18px; }
   .site-footer p { order: 3; width: 100%; }
 }
-h1, h2, h3, h4, h5, h6 {
+h1, h3, h4, h5, h6 {
   color: #397A78 !important;
 }
 @media (prefers-reduced-motion: reduce) {
