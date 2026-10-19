@@ -188,7 +188,7 @@ export default function Home() {
                 const book = BOOKS[id];
                 return (
                   <article className="result-book" key={id}>
-                    <BookCover variant={id === "book_vu_tru" ? "green" : "clay"} />
+                    <BookCover variant={id === "book_vu_tru" ? "teal" : "warm-coral"} />
                     <div className="result-book-copy">
                       <span className="book-kicker">EBOOK · THỰC HÀNH CÁ NHÂN</span>
                       <h4>{book.title}</h4>
