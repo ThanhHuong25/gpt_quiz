@@ -350,7 +350,7 @@ function BookCard({
     <article className="book-card">
       <div className="book-card-top">
         <span className="book-number">{number} / EBOOK</span>
-        <BookCover variant={variant} />
+        <BookCover variant={variant === "clay" ? "warm-coral" : "teal"} />
       </div>
       <div className="book-card-content">
         <h3>{title}</h3>
