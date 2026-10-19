@@ -279,6 +279,9 @@ del { color: #9d9a8e; font-size: 10px; font-weight: 400; }
 h1, h3, h4, h5, h6 {
   color: #397A78 !important;
 }
+h2 {
+  color: var(--warm-coral) !important;
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
