@@ -54,7 +54,7 @@ export default function Home() {
     <header className="site-header">
       <a className="brand" href="#top" aria-label="Trở về trang chủ">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <image 
+          <Image 
             src="/logo-thanh-huong.png" 
             alt="Logo Thanh Hương" 
             style={{ height: '40px', width: 'auto', objectFit: 'contain' }} 
