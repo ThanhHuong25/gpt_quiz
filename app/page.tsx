@@ -52,7 +52,14 @@ export default function Home() {
   return (
     <main>
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="Thanh Hương — trở về với chính mình">
+        <a className="brand" href="#top" aria-label=<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+  <img 
+    src="/logo-thanh-huong.png" 
+    alt="Logo Thanh Hương" 
+    style={{ height: '40px', width: 'auto', objectFit: 'contain' }} 
+  />
+  <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>TRỞ VỀ VỚI CHÍNH MÌNH</span>
+</div>>
           <span className="brand-mark">H</span>
           <span>
             <strong>Thanh Hương</strong>
