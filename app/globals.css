@@ -296,3 +296,21 @@ h1 em, h2 em, h3 em, h4 em, h5 em, h6 em, p em, em, i {
 .book-card-content h3 {
   color: var(--warm-coral) !important;
 }
+
+/* Sửa lỗi đè chữ: Ép các khối sách hiển thị theo dạng hàng dọc tự động giãn cách trên mobile/màn hình nhỏ */
+.ebook-grid, .books-grid, [class*="grid"], [class*="card"] {
+  display: flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  gap: 30px !important;
+}
+
+/* Đảm bảo khung bọc ngoài cùng không bị cố định chiều cao */
+.results-panel, #quiz-results {
+  height: auto !important;
+  min-height: max-content !important;
+  display: block !important;
+}
