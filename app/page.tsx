@@ -268,10 +268,21 @@ export default function Home() {
 
       <section className="about-section" id="about">
         <div className="section-wrap about-inner">
-          <div className="about-mark">H<span>✳</span></div>
-          <div className="about-copy">
-            <p className="eyebrow">06 / ĐÔI LỜI TỪ THANH HƯƠNG</p>
-            <h2>Tôi không có câu trả lời thay bạn.<br /><em>Tôi tin bạn có thể lắng nghe mình.</em></h2>
+        <div className="about-logo" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Image 
+            src="/logo-thanh-huong.png" 
+            alt="Logo Thanh Hương" 
+            width={160} 
+            height={160} 
+            style={{ objectFit: 'contain' }} 
+          />
+        </div>
+        <div className="about-copy">
+          <p className="eyebrow">06 / ĐÔI LỜI TỪ THANH HƯƠNG</p>
+          <h2>
+            Tôi không có câu trả lời thay bạn.<br />
+            <em style={{ color: 'var(--warm-coral)', fontStyle: 'normal' }}>Tôi tin bạn có thể lắng nghe mình.</em>
+          </h2>
             <p>Tôi tạo ra những tài liệu và không gian thực hành này như một lời mời trở về: chậm lại, quan sát và thành thật hơn với những gì đang diễn ra bên trong. Bạn không cần phải thay đổi tất cả trong một ngày. Đôi khi, một câu hỏi đúng lúc cũng đủ mở ra một hướng nhìn mới.</p>
             <p className="signature">Thanh Hương <span>— SoulCoach</span></p>
           </div>
