@@ -276,16 +276,17 @@ del { color: #9d9a8e; font-size: 10px; font-weight: 400; }
   .site-footer { flex-wrap: wrap; padding: 22px 18px; }
   .site-footer p { order: 3; width: 100%; }
 }
-h1, h3, h4, h5, h6 {
-  color: #397A78 !important;
-}
-h2 {
-  color: var(--warm-coral) !important;
-}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
-em, i {
+/* Quy định tất cả tiêu đề có màu mặc định là Teal */
+h1, h2, h3, h4, h5, h6 {
+  color: #397A78 !important;
+}
+
+/* Chỉ nhuộm riêng các chữ in nghiêng nằm BÊN TRONG tiêu đề hoặc đoạn văn sang Warm Coral */
+h1 em, h2 em, h3 em, h4 em, h5 em, h6 em, p em, em, i {
   color: var(--warm-coral) !important;
   font-style: italic !important;
 }
