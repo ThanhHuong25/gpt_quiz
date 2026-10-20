@@ -297,20 +297,39 @@ h1 em, h2 em, h3 em, h4 em, h5 em, h6 em, p em, em, i {
   color: var(--warm-coral) !important;
 }
 
-/* Sửa lỗi đè chữ: Ép các khối sách hiển thị theo dạng hàng dọc tự động giãn cách trên mobile/màn hình nhỏ */
-.ebook-grid, .books-grid, [class*="grid"], [class*="card"] {
+/* --- ĐOẠN CODE SỬA LỖI ĐÈ CHỮ VÀ CĂN GIỮA ĐÁP ÁN CHUẨN XÁC --- */
+
+/* Chỉ ép các thẻ chứa danh sách sách hiển thị dạng cột dãn cách, không gom bừa bãi các thẻ khác */
+.need-grid, .books-grid, [class*="-grid"] {
   display: flex !important;
   flex-direction: column !important;
-  height: auto !important;
+  gap: 32px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
+
+/* Sửa lỗi lệch màn hình: Đưa chiếc thẻ sách đơn lẻ về vị trí tự động căn giữa */
+[class*="book-card"], [class*="ebook-card"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important; /* Căn giữa tất cả thành phần bên trong */
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important; /* Căn giữa toàn bộ khối thẻ vào màn hình */
   position: relative !important;
   top: 0 !important;
   left: 0 !important;
-  gap: 30px !important;
+  height: auto !important;
 }
 
-/* Đảm bảo khung bọc ngoài cùng không bị cố định chiều cao */
+/* Đảm bảo khung bọc kết quả trắc nghiệm tự co giãn độ dài tự nhiên */
 .results-panel, #quiz-results {
   height: auto !important;
   min-height: max-content !important;
   display: block !important;
+  width: 100% !important;
+  overflow: hidden !important;
 }
