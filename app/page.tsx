@@ -237,7 +237,9 @@ export default function Home() {
           </section>
         )}
       </section>
-
+        )}
+      </section>
+        
       <section className="books-section" id="books">
         <div className="section-wrap">
           <div className="section-heading centered">
