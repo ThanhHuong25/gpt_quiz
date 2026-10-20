@@ -211,14 +211,13 @@ export default function Home() {
           </section>
         )}
 
-
             <div className="recommendation-heading">
               <p className="eyebrow">03 / ĐIỂM BẮT ĐẦU GỢI Ý</p>
               <h3>{suggestedBooks.length > 1 ? "Bạn có thể chọn một trong hai hướng — hoặc kết hợp cả hai." : "Một cuốn sách để bắt đầu hành trình."}</h3>
             </div>
             <div className="result-books">
               {suggestedBooks.map((id) => {
-                const book = BOOKS[id];
+                const book = BOOKS[id as keyof typeof BOOKS];
                 return (
                   <article className="result-book" key={id}>
                     <BookCover variant={id === "book_vu_tru" ? "teal" : "warm-coral"} />
@@ -234,16 +233,18 @@ export default function Home() {
               })}
             </div>
             <p className="result-disclaimer">Kết quả chỉ mang tính gợi mở để tự quan sát, không phải đánh giá tâm lý hay lời khuyên chuyên môn.</p>
-            </section>
+          </section>
         )}
       </section>
   
+      <section className="books-section" id="books">
         <div className="section-wrap">
           <div className="section-heading centered">
             <p className="eyebrow">04 / HAI ĐIỂM BẮT ĐẦU</p>
             <h2>Mỗi người có một cánh cửa riêng <em>để trở về.</em></h2>
             <p>Không cần đọc thật nhanh. Hãy chọn cuốn sách gần với điều bạn đang cần, rồi thực hành từng chút một.</p>
           </div>
+
           <div className="books-grid">
             <BookCard
               variant="clay"
