@@ -19,8 +19,8 @@ const money = (amount: number) =>
 
 
 /* ===== CẤU HÌNH LIÊN HỆ CHỐT ĐƠN — THAY BẰNG THÔNG TIN THẬT CỦA BẠN ===== */
-const ZALO_URL = "https://zalo.me/0908235225";            // thay bằng zalo.me/<số điện thoại Zalo của bạn>
-const MESSENGER_URL = "https://m.me/tong.huong.37916";   // thay bằng m.me/<tên người dùng Facebook/Fanpage của bạn>
+const ZALO_URL = "https://zalo.me/0900000000";            // thay bằng zalo.me/<số điện thoại Zalo của bạn>
+const MESSENGER_URL = "https://m.me/ten-trang-cua-ban";   // thay bằng m.me/<tên người dùng Facebook/Fanpage của bạn>
 
 type OrderItem = { title: string; price: number };
 
@@ -378,7 +378,7 @@ export default function Home() {
             <em style={{ color: 'var(--warm-coral)', fontStyle: 'normal' }}>Tôi tin bạn có thể lắng nghe mình.</em>
           </h2>
             <p>Tôi tạo ra những tài liệu và không gian thực hành này như một lời mời trở về: chậm lại, quan sát và thành thật hơn với những gì đang diễn ra bên trong. Bạn không cần phải thay đổi tất cả trong một ngày. Đôi khi, một câu hỏi đúng lúc cũng đủ mở ra một hướng nhìn mới.</p>
-            <p className="signature">Thanh Hương <span>— SoulCoach</span></p>
+            <p className="signature">Thanh Hương <span>— Người đồng hành tâm thức</span></p>
           </div>
         </div>
       </section>
