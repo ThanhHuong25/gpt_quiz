@@ -13,37 +13,30 @@ export type QuizQuestion = {
   options: QuizOption[];
 };
 
-export const DIMENSIONS: Record<
-  Dimension,
-  { title: string; short: string; description: string; bookId: string }
-> = {
-  A: {
-    title: "Tìm lại sự vững vàng",
-    short: "Sự vững vàng",
-    description:
-      "Bạn có thể đang cần một khoảng dừng để lắng lại, ổn định cảm xúc và trở về với hiện tại thay vì phải gồng mình đi tiếp.",
-    bookId: "book_tinh_lang"
+export const DIMENSIONS: Record<string, { title: string; description: string; practice: string; reflection: string }> = {
+  "warm-coral": {
+    title: "Có lẽ bạn đang cần một điểm tựa vững vàng hơn.",
+    description: "“Có những lúc cuộc sống diễn ra quá nhanh khiến chúng ta khó nghe thấy chính mình. Bạn không cần giải quyết tất cả ngay lập tức. Đôi khi, bước đầu tiên chỉ là dừng lại, nhận biết trạng thái hiện tại và cho mình một khoảng thở.”",
+    practice: "Dành 3 phút để cảm nhận bàn chân chạm sàn, nhịp thở và những điểm tiếp xúc của cơ thể với chiếc ghế. Không cần ép mình phải bình an. Chỉ nhận biết điều đang diễn ra.",
+    reflection: "“Ngay lúc này, điều gì có thể giúp tôi cảm thấy vững vàng hơn một chút?”"
   },
-  B: {
-    title: "Hiểu mình và những phản ứng của mình",
-    short: "Thấu hiểu bản thân",
-    description:
-      "Bạn có thể đang muốn nhận ra điều gì diễn ra bên trong mình, điều gì kích hoạt phản ứng và cách quan sát bản thân mà không vội phán xét.",
-    bookId: "book_tinh_lang"
+  "teal": {
+    title: "Bạn có thể bắt đầu bằng việc lắng nghe chính mình, không phán xét.",
+    description: "“Đôi khi điều khiến chúng ta mệt mỏi không chỉ là một sự việc, mà còn là những suy nghĩ và phán xét xuất hiện sau đó. Quan sát không có nghĩa là phải sửa mình ngay. Đó có thể là bước đầu tiên để hiểu mình rõ hơn.”",
+    practice: "Viết ba dòng:\n- Điều gì vừa xảy ra?\n- Tôi đang cảm thấy gì?\n- Tôi có thể cần điều gì lúc này?",
+    reflection: "“Nếu không cần kết luận mình đúng hay sai, tôi có thể hiểu điều gì về phản ứng vừa rồi?”"
   },
-  C: {
-    title: "Tìm nhịp điệu riêng",
-    short: "Nhịp điệu riêng",
-    description:
-      "Bạn có thể đang cần hiểu nhịp năng lượng của mình: khi nào nên tiến lên, khi nào nên chậm lại và cách lắng nghe những chu kỳ cá nhân.",
-    bookId: "book_vu_tru"
+  "sage": {
+    title: "Có lẽ đã đến lúc bạn lắng nghe nhịp điệu riêng.",
+    description: "“Không phải lúc nào tiến nhanh hơn cũng là lựa chọn tốt nhất. Có những giai đoạn chúng ta sẵn sàng mở rộng, cũng có những giai đoạn cần thu mình, nghỉ ngơi hoặc sắp xếp lại. Điều quan trọng không phải là chạy theo nhịp của người khác, mà là quan sát nhịp sống thực tế của mình.”",
+    practice: "Hãy nghĩ về một việc bạn đang muốn bắt đầu. Tự hỏi: “Tôi đang thực sự có năng lượng để thực hiện, hay đang ép mình vì sợ bị chậm lại?”",
+    reflection: "“Nếu cho phép mình điều chỉnh nhịp độ, tôi sẽ lựa chọn khác đi như thế nào?”"
   },
-  D: {
-    title: "Buông bớt kiểm soát và sống có chủ đích",
-    short: "Buông kiểm soát",
-    description:
-      "Bạn có thể đang muốn bớt tiêu hao năng lượng vào những điều ngoài tầm tay và lựa chọn cách sống phù hợp hơn với điều thật sự quan trọng.",
-    bookId: "book_tinh_lang"
+  "lavender": {
+    title: "Bạn có thể nhẹ hơn khi phân biệt điều mình có thể làm và điều cần buông.",
+    description: "“Khi mọi thứ không diễn ra như mong muốn, chúng ta dễ dành nhiều năng lượng để cố kiểm soát kết quả. Nhưng không phải điều gì cũng nằm trong tay mình. Đôi khi, sự chủ động bắt đầu từ việc nhận ra đâu là phần việc thực sự thuộc về mình.”",
+    practice: "Chia một tờ giấy thành hai cột:\n- Điều nằm trong khả năng hành động của tôi.\n- Điều tôi không thể kiểm soát hoàn toàn.\n\nChọn một hành động nhỏ từ cột đầu tiên.",
+    reflection: "“Nếu ngừng cố kiểm soát phần không thuộc về mình, tôi có thể dành năng lượng cho điều gì?”"
   }
 };
 
