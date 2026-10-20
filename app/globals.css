@@ -321,3 +321,9 @@ del { color: #9d9a8e; font-size: 10px; font-weight: 400; }
 .need-card { border-top: 3px solid var(--lavender); }
 .need-card:nth-child(even) { border-top-color: var(--mint); }
 .order-message { border-left-color: var(--lavender); background: var(--lavender-soft); }
+
+/* ===== Tiêu đề màu xanh cổ vịt ===== */
+h1, h2, h3, h4 { color: var(--teal); }
+/* Khối nền tối giữ chữ sáng để không bị chìm */
+.combo-card h1, .combo-card h2, .combo-card h3, .combo-card h4,
+.closing-section h1, .closing-section h2, .closing-section h3, .closing-section h4 { color: inherit; }
