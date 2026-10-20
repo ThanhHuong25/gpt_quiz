@@ -156,28 +156,61 @@ export default function Home() {
         </div>
 
         {showResults && (
-          <section className="results-panel" id="quiz-results" aria-live="polite">
-            <div className="results-topline"><span className="eyebrow">02 / ĐIỀU BẠN ĐANG CẦN</span><button className="text-button" onClick={restartQuiz}>Làm lại trắc nghiệm ↻</button></div>
-            <h2>{results.exploratory ? "Bạn đang ở giai đoạn khám phá." : "Có hơn một nhu cầu đang cần được lắng nghe."}</h2>
-            <p className="results-intro">
-              {results.exploratory
-                ? "Kết quả hiện chưa cho thấy một nhu cầu nổi bật rõ ràng. Điều đó không có nghĩa là bạn không có nhu cầu — có thể bạn đang ở giai đoạn tìm hiểu và quan sát chính mình."
-                : "Những gợi ý dưới đây không phải nhãn dán hay kết luận về con người bạn. Hãy xem chúng như một tấm gương nhỏ để bạn tự cảm nhận điều nào đang phù hợp."}
-            </p>
+          <section className="results-panel" id="quiz-results" aria-live="polite" style={{ width: '100%', maxWidth: '800px', margin: '40px auto', padding: '20px' }}>
+            <div className="results-topline" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <span className="eyebrow" style={{ color: 'var(--muted)' }}>02 / ĐIỀU BẠN ĐANG CẦN</span>
+              <button className="text-button" onClick={restartQuiz} style={{ background: 'none', border: 'none', color: 'var(--teal)', cursor: 'pointer', textDecoration: 'underline' }}>Làm lại trắc nghiệm ↻</button>
+            </div>
+            
+            {results.exploratory ? (
+              /* --- GIAI ĐOẠN KHÁM PHÁ --- */
+              <div className="explore-container" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <h2 style={{ color: 'var(--teal)', fontSize: '2rem' }}>Bạn chưa cần vội gọi tên điều mình đang cần.</h2>
+                <p style={{ fontSize: '1.1rem', lineHeight: '1.6', color: 'var(--ink)' }}>
+                  “Có thể hiện tại bạn đang quan tâm đến nhiều điều, hoặc nhu cầu bên trong chưa thật sự nổi bật. Điều đó không có nghĩa là bạn thiếu định hướng. Bạn có thể bắt đầu bằng một khoảng lặng nhỏ, quan sát bản thân trong vài ngày và xem điều gì thường xuyên xuất hiện.”
+                </p>
+                <div style={{ background: 'var(--paper)', padding: '20px', borderRadius: '8px', borderLeft: '4px solid var(--warm-coral)' }}>
+                  <strong style={{ display: 'block', marginBottom: '8px', color: 'var(--warm-coral)' }}>Thực hành:</strong>
+                  <p style={{ whiteSpace: 'pre-line', lineHeight: '1.6' }}>
+                    Trong ba ngày, mỗi tối dành vài phút ghi lại:\n- Điều khiến tôi thấy nhẹ nhõm hôm nay.\n- Điều khiến tôi cảm thấy gồng mình.\n- Điều tôi muốn dành thêm thời gian lắng nghe.
+                  </p>
+                </div>
+                <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'var(--muted)' }}>
+                  Sau đó, chọn cuốn sách phù hợp với điều bạn muốn khám phá trước tiên.
+                </div>
+              </div>
+            ) : (
+              /* --- KẾT QUẢ ĐÁP ÁN NHÓM NHIỀU NHU CẦU / NHU CẦU NỔI BẬT --- */
+              <div className="need-grid" style={{ display: 'flex', flexDirection: 'column', gap: '40px', width: '100%' }}>
+                {results.salient.map((dimension: string) => (
+                  <article className="need-card" key={dimension} style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--paper)', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', width: '100%', boxSizing: 'border-box' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className="need-score" style={{ background: 'var(--line)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 'bold' }}>{results.scores[dimension]} điểm</span>
+                    </div>
+                    <h2 style={{ color: 'var(--warm-coral)', margin: '10px 0', fontSize: '1.8rem', lineHeight: '1.4' }}>{DIMENSIONS[dimension].title}</h2>
+                    <p style={{ fontSize: '1.1rem', lineHeight: '1.6', fontStyle: 'italic', color: 'var(--ink)' }}>{DIMENSIONS[dimension].description}</p>
+                    
+                    <div style={{ marginTop: '10px', padding: '16px', background: '#fcfbfa', borderRadius: '8px', borderLeft: '4px solid var(--teal)' }}>
+                      <strong style={{ display: 'block', marginBottom: '6px', color: 'var(--teal)' }}>Thực hành:</strong>
+                      <p style={{ whiteSpace: 'pre-line', lineHeight: '1.6' }}>{DIMENSIONS[dimension].practice}</p>
+                    </div>
 
-            {results.salient.length > 0 ? (
-              <div className="need-grid">
-                {results.salient.map((dimension: Dimension) => (
-                  <article className="need-card" key={dimension}>
-                    <span className="need-score">{results.scores[dimension]} điểm</span>
-                    <h3>{DIMENSIONS[dimension].title}</h3>
-                    <p>{DIMENSIONS[dimension].description}</p>
+                    <div style={{ marginTop: '10px', padding: '16px', background: '#fcfbfa', borderRadius: '8px', borderLeft: '4px solid var(--muted)' }}>
+                      <strong style={{ display: 'block', marginBottom: '6px', color: 'var(--muted)' }}>Câu hỏi tự chiêm nghiệm:</strong>
+                      <p style={{ lineHeight: '1.6', fontWeight: '500' }}>{DIMENSIONS[dimension].reflection}</p>
+                    </div>
+
+                    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid var(--line)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+                      <span style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--muted)' }}>Sách bắt đầu gợi ý:</span>
+                      <BookCover variant={dimension === "sage" ? "teal" : "warm-coral"} />
+                    </div>
                   </article>
                 ))}
               </div>
-            ) : (
-              <div className="explore-note"><span>✳</span><p>Có thể bắt đầu bằng một bài thực hành ngắn: dành vài phút mỗi ngày để ghi lại cảm xúc, năng lượng và điều bạn thật sự cần — chưa cần vội thay đổi điều gì.</p></div>
             )}
+          </section>
+        )}
+
 
             <div className="recommendation-heading">
               <p className="eyebrow">03 / ĐIỂM BẮT ĐẦU GỢI Ý</p>
