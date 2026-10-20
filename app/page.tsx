@@ -20,7 +20,7 @@ const money = (amount: number) =>
 
 /* ===== CẤU HÌNH LIÊN HỆ CHỐT ĐƠN — THAY BẰNG THÔNG TIN THẬT CỦA BẠN ===== */
 const ZALO_URL = "https://zalo.me/0908235225";            // thay bằng zalo.me/<số điện thoại Zalo của bạn>
-const MESSENGER_URL = "https://www.facebook.com/tong.huong.37916/";   // thay bằng m.me/<tên người dùng Facebook/Fanpage của bạn>
+const MESSENGER_URL = "https://m.me/tong.huong.37916";   // thay bằng m.me/<tên người dùng Facebook/Fanpage của bạn>
 
 type OrderItem = { title: string; price: number };
 
