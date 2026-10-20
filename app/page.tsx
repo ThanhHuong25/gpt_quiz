@@ -46,9 +46,9 @@ export default function Home() {
   }
 
   const recommendedIds = results.recommendedBookIds;
-  const suggestedBooks = recommendedIds.length
+  const suggestedBooks: (typeof bookOrder)[number][] = recommendedIds.length
     ? bookOrder.filter((id) => recommendedIds.includes(id))
-    : ["book_tinh_lang", "book_vu_tru"] as const;
+    : ["book_tinh_lang", "book_vu_tru"];
 
   return (
     <main>
@@ -172,7 +172,10 @@ export default function Home() {
                 <div style={{ background: 'var(--paper)', padding: '20px', borderRadius: '8px', borderLeft: '4px solid var(--warm-coral)' }}>
                   <strong style={{ display: 'block', marginBottom: '8px', color: 'var(--warm-coral)' }}>Thực hành:</strong>
                   <p style={{ whiteSpace: 'pre-line', lineHeight: '1.6' }}>
-                    Trong ba ngày, mỗi tối dành vài phút ghi lại:\n- Điều khiến tôi thấy nhẹ nhõm hôm nay.\n- Điều khiến tôi cảm thấy gồng mình.\n- Điều tôi muốn dành thêm thời gian lắng nghe.
+                    {`Trong ba ngày, mỗi tối dành vài phút ghi lại:
+- Điều khiến tôi thấy nhẹ nhõm hôm nay.
+- Điều khiến tôi cảm thấy gồng mình.
+- Điều tôi muốn dành thêm thời gian lắng nghe.`}
                   </p>
                 </div>
                 <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'var(--muted)' }}>
@@ -182,7 +185,7 @@ export default function Home() {
             ) : (
               /* --- KẾT QUẢ ĐÁP ÁN NHÓM NHIỀU NHU CẦU / NHU CẦU NỔI BẬT --- */
               <div className="need-grid" style={{ display: 'flex', flexDirection: 'column', gap: '40px', width: '100%' }}>
-                {results.salient.map((dimension: string) => (
+                {results.salient.map((dimension: Dimension) => (
                   <article className="need-card" key={dimension} style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--paper)', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', width: '100%', boxSizing: 'border-box' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span className="need-score" style={{ background: 'var(--line)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 'bold' }}>{results.scores[dimension]} điểm</span>
@@ -202,14 +205,12 @@ export default function Home() {
 
                     <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid var(--line)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
                       <span style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--muted)' }}>Sách bắt đầu gợi ý:</span>
-                      <BookCover variant={dimension === "sage" ? "teal" : "warm-coral"} />
+                      <BookCover variant={DIMENSIONS[dimension].bookId === "book_vu_tru" ? "teal" : "warm-coral"} />
                     </div>
                   </article>
                 ))}
               </div>
             )}
-          </section>
-        )}
 
             <div className="recommendation-heading">
               <p className="eyebrow">03 / ĐIỂM BẮT ĐẦU GỢI Ý</p>
@@ -236,7 +237,7 @@ export default function Home() {
           </section>
         )}
       </section>
-
+  
       <section className="books-section" id="books">
         <div className="section-wrap">
           <div className="section-heading centered">
