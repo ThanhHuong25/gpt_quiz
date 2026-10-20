@@ -1,7 +1,7 @@
 "use client";
 
 import Image from 'next/image';
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BOOKS,
   calculateResults,
@@ -17,12 +17,70 @@ const money = (amount: number) =>
     maximumFractionDigits: 0
   }).format(amount);
 
+
+/* ===== CẤU HÌNH LIÊN HỆ CHỐT ĐƠN — THAY BẰNG THÔNG TIN THẬT CỦA BẠN ===== */
+const ZALO_URL = "https://zalo.me/0900000000";            // thay bằng zalo.me/<số điện thoại Zalo của bạn>
+const MESSENGER_URL = "https://m.me/ten-trang-cua-ban";   // thay bằng m.me/<tên người dùng Facebook/Fanpage của bạn>
+
+type OrderItem = { title: string; price: number };
+
+function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!item) return;
+    setCopied(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [item, onClose]);
+
+  if (!item) return null;
+
+  const message = `Chào Thanh Hương, mình muốn đặt ${item.title} (${money(item.price)}). Nhờ bạn hướng dẫn mình cách thanh toán và nhận file nhé.`;
+
+  function contact(url: string) {
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(message).then(() => setCopied(true)).catch(() => setCopied(false));
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  return (
+    <div className="order-backdrop" onClick={onClose}>
+      <div
+        className="order-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="order-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button type="button" className="order-close" onClick={onClose} aria-label="Đóng">×</button>
+        <p className="eyebrow">CHỐT ĐƠN QUA TIN NHẮN</p>
+        <h3 id="order-title">{item.title}</h3>
+        <p className="order-price">{money(item.price)}</p>
+        <p className="order-hint">Chọn nơi bạn muốn nhắn. Tin nhắn đặt hàng sẽ được sao chép sẵn, bạn chỉ cần dán (giữ ô chat rồi chọn Dán) và gửi.</p>
+        <blockquote className="order-message">{message}</blockquote>
+        <div className="order-actions">
+          <button type="button" className="button button-dark" onClick={() => contact(ZALO_URL)}>Nhắn qua Zalo <span>→</span></button>
+          <button type="button" className="button button-outline" onClick={() => contact(MESSENGER_URL)}>Nhắn qua Messenger <span>→</span></button>
+        </div>
+        {copied && <p className="order-copied" aria-live="polite">✓ Đã sao chép tin nhắn. Hãy dán vào khung chat.</p>}
+      </div>
+    </div>
+  );
+}
+
 const bookOrder = ["book_tinh_lang", "book_vu_tru", "combo_tro_ve"] as const;
 
 export default function Home() {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
   const [email, setEmail] = useState("");
+  const [order, setOrder] = useState<OrderItem | null>(null);
+  const closeOrder = useCallback(() => setOrder(null), []);
 
   const answeredCount = Object.keys(answers).length;
   const results = useMemo(() => calculateResults(answers), [answers]);
@@ -257,6 +315,7 @@ export default function Home() {
               listPrice={BOOKS.book_tinh_lang.listPrice}
               launchPrice={BOOKS.book_tinh_lang.launchPrice}
               cta="Tôi muốn bắt đầu từ sự tĩnh lặng"
+              onOrder={() => setOrder({ title: BOOKS.book_tinh_lang.title, price: BOOKS.book_tinh_lang.launchPrice })}
             />
             <BookCard
               variant="green"
@@ -268,6 +327,7 @@ export default function Home() {
               listPrice={BOOKS.book_vu_tru.listPrice}
               launchPrice={BOOKS.book_vu_tru.launchPrice}
               cta="Tôi muốn lắng nghe nhịp điệu riêng"
+              onOrder={() => setOrder({ title: BOOKS.book_vu_tru.title, price: BOOKS.book_vu_tru.launchPrice })}
             />
           </div>
           <div className="combo-card">
@@ -282,7 +342,7 @@ export default function Home() {
               <del>{money(BOOKS.combo_tro_ve.listPrice)}</del>
               <span>Giá ra mắt dự kiến</span>
             </div>
-            <a className="button button-light" href="#contact">Quan tâm bộ đôi <span>→</span></a>
+            <button type="button" className="button button-light" onClick={() => setOrder({ title: BOOKS.combo_tro_ve.title, price: BOOKS.combo_tro_ve.launchPrice })}>Quan tâm bộ đôi <span>→</span></button>
           </div>
           <p className="pricing-note">Giá ra mắt dự kiến, có thể điều chỉnh trước khi mở bán chính thức. Các nút mua hàng hiện là vị trí chờ tích hợp thanh toán.</p>
         </div>
@@ -349,6 +409,7 @@ export default function Home() {
         <p>© {new Date().getFullYear()} Thanh Hương · Một không gian để lắng nghe chính mình.</p>
         <a href="#top">Lên đầu trang ↑</a>
       </footer>
+      <OrderModal item={order} onClose={closeOrder} />
     </main>
   );
 }
@@ -375,7 +436,7 @@ function BookCover({ variant }: { variant: "warm-coral" | "teal" }) {
 }
 
 function BookCard({
-  variant, number, title, subtitle, description, bullets, listPrice, launchPrice, cta
+  variant, number, title, subtitle, description, bullets, listPrice, launchPrice, cta, onOrder
 }: {
   variant: "clay" | "green";
   number: string;
@@ -386,6 +447,7 @@ function BookCard({
   listPrice: number;
   launchPrice: number;
   cta: string;
+  onOrder: () => void;
 }) {
   return (
     <article className="book-card">
@@ -399,7 +461,7 @@ function BookCard({
         <p className="book-description">{description}</p>
         <ul>{bullets.map((bullet) => <li key={bullet}><span>✓</span>{bullet}</li>)}</ul>
         <div className="book-price-row"><div><strong>{money(launchPrice)}</strong><del>{money(listPrice)}</del></div><span>Giá ra mắt</span></div>
-        <a className="button button-outline" href="#contact">{cta} <span>→</span></a>
+        <button type="button" className="button button-outline" onClick={onOrder}>{cta} <span>→</span></button>
       </div>
     </article>
   );
