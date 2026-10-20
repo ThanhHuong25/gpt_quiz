@@ -59,8 +59,8 @@ export const BOOKS = {
     id: "book_vu_tru",
     title: "Sổ tay vũ trụ cá nhân",
     subtitle: "Lắng nghe nhịp điệu và những chu kỳ của chính mình",
-    listPrice: 79000,
-    launchPrice: 59000,
+    listPrice: 99000,
+    launchPrice: 89000,
     description:
       "Dành cho những ai muốn quan sát nhịp năng lượng cá nhân, nhận biết lúc nên mở rộng và lúc cần nghỉ ngơi, đồng thời ghi lại những khám phá của mình.",
     bullets: [
@@ -73,8 +73,8 @@ export const BOOKS = {
     id: "combo_tro_ve",
     title: "Bộ đôi Trở về với chính mình",
     subtitle: "Hai ebook và gợi ý thực hành thiền đồng hành",
-    listPrice: 149000,
-    launchPrice: 119000,
+    listPrice: 189000,
+    launchPrice: 159000,
     description:
       "Kết hợp hai hướng thực hành: tìm lại sự vững vàng bên trong và hiểu nhịp điệu riêng của mình.",
     bullets: [
