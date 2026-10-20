@@ -13,26 +13,35 @@ export type QuizQuestion = {
   options: QuizOption[];
 };
 
-export const DIMENSIONS: Record<string, { title: string; description: string; practice: string; reflection: string }> = {
-  "warm-coral": {
+export type RecommendedBookId = "book_tinh_lang" | "book_vu_tru";
+
+export const DIMENSIONS: Record<
+  Dimension,
+  { bookId: RecommendedBookId; title: string; description: string; practice: string; reflection: string }
+> = {
+  A: {
+    bookId: "book_tinh_lang",
     title: "Có lẽ bạn đang cần một điểm tựa vững vàng hơn.",
     description: "“Có những lúc cuộc sống diễn ra quá nhanh khiến chúng ta khó nghe thấy chính mình. Bạn không cần giải quyết tất cả ngay lập tức. Đôi khi, bước đầu tiên chỉ là dừng lại, nhận biết trạng thái hiện tại và cho mình một khoảng thở.”",
     practice: "Dành 3 phút để cảm nhận bàn chân chạm sàn, nhịp thở và những điểm tiếp xúc của cơ thể với chiếc ghế. Không cần ép mình phải bình an. Chỉ nhận biết điều đang diễn ra.",
     reflection: "“Ngay lúc này, điều gì có thể giúp tôi cảm thấy vững vàng hơn một chút?”"
   },
-  "teal": {
+  B: {
+    bookId: "book_tinh_lang",
     title: "Bạn có thể bắt đầu bằng việc lắng nghe chính mình, không phán xét.",
     description: "“Đôi khi điều khiến chúng ta mệt mỏi không chỉ là một sự việc, mà còn là những suy nghĩ và phán xét xuất hiện sau đó. Quan sát không có nghĩa là phải sửa mình ngay. Đó có thể là bước đầu tiên để hiểu mình rõ hơn.”",
     practice: "Viết ba dòng:\n- Điều gì vừa xảy ra?\n- Tôi đang cảm thấy gì?\n- Tôi có thể cần điều gì lúc này?",
     reflection: "“Nếu không cần kết luận mình đúng hay sai, tôi có thể hiểu điều gì về phản ứng vừa rồi?”"
   },
-  "sage": {
+  C: {
+    bookId: "book_vu_tru",
     title: "Có lẽ đã đến lúc bạn lắng nghe nhịp điệu riêng.",
     description: "“Không phải lúc nào tiến nhanh hơn cũng là lựa chọn tốt nhất. Có những giai đoạn chúng ta sẵn sàng mở rộng, cũng có những giai đoạn cần thu mình, nghỉ ngơi hoặc sắp xếp lại. Điều quan trọng không phải là chạy theo nhịp của người khác, mà là quan sát nhịp sống thực tế của mình.”",
     practice: "Hãy nghĩ về một việc bạn đang muốn bắt đầu. Tự hỏi: “Tôi đang thực sự có năng lượng để thực hiện, hay đang ép mình vì sợ bị chậm lại?”",
     reflection: "“Nếu cho phép mình điều chỉnh nhịp độ, tôi sẽ lựa chọn khác đi như thế nào?”"
   },
-  "lavender": {
+  D: {
+    bookId: "book_vu_tru",
     title: "Bạn có thể nhẹ hơn khi phân biệt điều mình có thể làm và điều cần buông.",
     description: "“Khi mọi thứ không diễn ra như mong muốn, chúng ta dễ dành nhiều năng lượng để cố kiểm soát kết quả. Nhưng không phải điều gì cũng nằm trong tay mình. Đôi khi, sự chủ động bắt đầu từ việc nhận ra đâu là phần việc thực sự thuộc về mình.”",
     practice: "Chia một tờ giấy thành hai cột:\n- Điều nằm trong khả năng hành động của tôi.\n- Điều tôi không thể kiểm soát hoàn toàn.\n\nChọn một hành động nhỏ từ cột đầu tiên.",
