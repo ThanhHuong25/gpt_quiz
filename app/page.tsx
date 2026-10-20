@@ -234,11 +234,9 @@ export default function Home() {
               })}
             </div>
             <p className="result-disclaimer">Kết quả chỉ mang tính gợi mở để tự quan sát, không phải đánh giá tâm lý hay lời khuyên chuyên môn.</p>
-          </section>
+            </section>
         )}
       </section>
-    </main>
-
   
         <div className="section-wrap">
           <div className="section-heading centered">
