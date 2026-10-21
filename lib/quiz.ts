@@ -56,6 +56,7 @@ export const BOOKS = {
     subtitle: "Một hành trình thực hành để trở về với sự vững vàng bên trong",
     listPrice: 89000,
     launchPrice: 69000,
+    previewUrl: "https://heyzine.com/flip-book/023a5c7ca9.html",
     description:
       "Dành cho những lúc bạn muốn chậm lại, quan sát những gì đang diễn ra bên trong và nuôi dưỡng sự vững vàng qua thực hành nhỏ mỗi ngày.",
     bullets: [
@@ -69,7 +70,10 @@ export const BOOKS = {
     title: "Sổ tay vũ trụ cá nhân",
     subtitle: "Lắng nghe nhịp điệu và những chu kỳ của chính mình",
     listPrice: 99000,
-    launchPrice: 89000,
+    launchPrice: 79000,
+    previewUrl: "https://heyzine.com/flip-book/90a368e390.html",
+    meditationUrl: "https://www.youtube.com/watch?v=FUfAIvhafFQ",
+    meditationTitle: "Bài thiền đồng điệu trái tim và não bộ",
     description:
       "Dành cho những ai muốn quan sát nhịp năng lượng cá nhân, nhận biết lúc nên mở rộng và lúc cần nghỉ ngơi, đồng thời ghi lại những khám phá của mình.",
     bullets: [
@@ -82,14 +86,14 @@ export const BOOKS = {
     id: "combo_tro_ve",
     title: "Bộ đôi Trở về với chính mình",
     subtitle: "Hai ebook và gợi ý thực hành thiền đồng hành",
-    listPrice: 189000,
-    launchPrice: 159000,
+    listPrice: 188000,
+    launchPrice: 128000,
     description:
       "Kết hợp hai hướng thực hành: tìm lại sự vững vàng bên trong và hiểu nhịp điệu riêng của mình.",
     bullets: [
       "Ebook Bản lĩnh tĩnh lặng",
       "Ebook Sổ tay vũ trụ cá nhân",
-      "Gợi ý thiền YouTube: Lắng nghe nhịp điệu bên trong"
+      "Bài tập thiền đi kèm: Bài thiền đồng điệu trái tim và não bộ"
     ]
   }
 } as const;
