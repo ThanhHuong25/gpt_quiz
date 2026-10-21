@@ -18,18 +18,23 @@ const money = (amount: number) =>
   }).format(amount);
 
 
-/* ===== CẤU HÌNH LIÊN HỆ CHỐT ĐƠN — THAY BẰNG THÔNG TIN THẬT CỦA BẠN ===== */
-const ZALO_URL = "https://zalo.me/0908235225";            // thay bằng zalo.me/<số điện thoại Zalo của bạn>
-const MESSENGER_URL = "https://m.me/tong.huong.37916";   // thay bằng m.me/<tên người dùng Facebook/Fanpage của bạn>
+/* ===== THÔNG TIN LIÊN HỆ & THANH TOÁN ===== */
+const ZALO_URL = "https://zalo.me/0908235225";            // Zalo của Thanh Hương
+const MESSENGER_URL = "https://m.me/tong.huong.37916";   // Messenger Facebook cá nhân của Thanh Hương
+const BANK = {
+  bankName: "ACB",
+  accountName: "TONG THI THANH HUONG",
+  accountNumber: "48629859"
+};
 
-type OrderItem = { title: string; price: number };
+type OrderItem = { title: string; price: number; code: string };
 
 function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => void }) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => {
     if (!item) return;
-    setCopied(false);
+    setCopied(null);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -39,12 +44,17 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
 
   if (!item) return null;
 
-  const message = `Chào Thanh Hương, mình muốn đặt ${item.title} (${money(item.price)}). Nhờ bạn hướng dẫn mình cách thanh toán và nhận file nhé.`;
+  const message = `Chào Thanh Hương, mình đã chuyển khoản ${money(item.price)} mua ${item.title}. Mình gửi ảnh chuyển khoản, nhờ bạn gửi file giúp mình nhé.`;
+  const note = `${item.code} + họ tên của bạn`;
+
+  function copy(text: string, key: string) {
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(() => setCopied(key)).catch(() => setCopied(null));
+    }
+  }
 
   function contact(url: string) {
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(message).then(() => setCopied(true)).catch(() => setCopied(false));
-    }
+    copy(message, "message");
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
@@ -58,17 +68,47 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
         onClick={(e) => e.stopPropagation()}
       >
         <button type="button" className="order-close" onClick={onClose} aria-label="Đóng">×</button>
-        <p className="eyebrow">CHỐT ĐƠN QUA TIN NHẮN</p>
+        <p className="eyebrow">THANH TOÁN &amp; NHẬN EBOOK</p>
         <h3 id="order-title">{item.title}</h3>
         <p className="order-price">{money(item.price)}</p>
-        <p className="order-hint">Chọn nơi bạn muốn nhắn. Tin nhắn đặt hàng sẽ được sao chép sẵn, bạn chỉ cần dán (giữ ô chat rồi chọn Dán) và gửi.</p>
-        <blockquote className="order-message">{message}</blockquote>
-        <div className="order-actions">
-          <button type="button" className="button button-dark" onClick={() => contact(ZALO_URL)}>Nhắn qua Zalo <span>→</span></button>
-          <button type="button" className="button button-outline" onClick={() => contact(MESSENGER_URL)}>Nhắn qua Messenger <span>→</span></button>
+
+        <p className="order-step-title"><span>1</span> Quét mã hoặc chuyển khoản</p>
+        <div className="order-qr">
+          <Image src="/qr-bank.jpg" alt={`Mã QR chuyển khoản ${BANK.bankName} - ${BANK.accountName}`} width={640} height={773} sizes="240px" />
         </div>
-        {copied && <p className="order-copied" aria-live="polite">✓ Đã sao chép tin nhắn. Hãy dán vào khung chat.</p>}
+        <dl className="order-bank">
+          <div><dt>Ngân hàng</dt><dd>{BANK.bankName}</dd></div>
+          <div><dt>Chủ tài khoản</dt><dd>{BANK.accountName}</dd></div>
+          <div>
+            <dt>Số tài khoản</dt>
+            <dd>{BANK.accountNumber} <button type="button" className="copy-chip" onClick={() => copy(BANK.accountNumber, "account")}>{copied === "account" ? "Đã chép ✓" : "Sao chép"}</button></dd>
+          </div>
+          <div>
+            <dt>Số tiền</dt>
+            <dd>{money(item.price)} <button type="button" className="copy-chip" onClick={() => copy(String(item.price), "amount")}>{copied === "amount" ? "Đã chép ✓" : "Sao chép"}</button></dd>
+          </div>
+          <div><dt>Nội dung</dt><dd>{note}</dd></div>
+        </dl>
+
+        <p className="order-step-title"><span>2</span> Gửi ảnh chuyển khoản để nhận file</p>
+        <p className="order-hint">Sau khi chuyển khoản, nhắn cho Thanh Hương kèm ảnh chụp màn hình. Bạn sẽ nhận file ebook <strong>trong ngày thanh toán</strong>. Tin nhắn mẫu đã được sao chép sẵn, bạn chỉ cần dán và gửi.</p>
+        <div className="order-actions">
+          <button type="button" className="button button-dark" onClick={() => contact(ZALO_URL)}>Gửi qua Zalo <span>→</span></button>
+          <button type="button" className="button button-outline" onClick={() => contact(MESSENGER_URL)}>Gửi qua Messenger <span>→</span></button>
+        </div>
+        {copied === "message" && <p className="order-copied" aria-live="polite">✓ Đã sao chép tin nhắn. Hãy dán vào khung chat.</p>}
+
+        <p className="order-policy">Hoàn tiền nếu bạn không đọc được sách. Vui lòng không chia sẻ file cho người khác.</p>
       </div>
+    </div>
+  );
+}
+
+function FloatingContact() {
+  return (
+    <div className="floating-contact" aria-label="Liên hệ nhanh">
+      <a className="fc fc-zalo" href={ZALO_URL} target="_blank" rel="noopener noreferrer">Nhắn Zalo</a>
+      <a className="fc fc-messenger" href={MESSENGER_URL} target="_blank" rel="noopener noreferrer">Messenger</a>
     </div>
   );
 }
@@ -126,6 +166,7 @@ export default function Home() {
         <nav>
           <a href="#quiz">Trắc nghiệm</a>
           <a href="#books">Hai cuốn sách</a>
+          <a href="#how-to-buy">Cách mua</a>
           <a href="#about">Về tác giả</a>
         </nav>
         <a className="nav-cta" href="#quiz">Bắt đầu từ đây <span>↗</span></a>
@@ -216,7 +257,7 @@ export default function Home() {
         {showResults && (
           <section className="results-panel" id="quiz-results" aria-live="polite" style={{ width: '100%', maxWidth: '800px', margin: '40px auto', padding: '20px' }}>
             <div className="results-topline" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <span className="eyebrow" style={{ color: 'var(--muted)' }}>02 / ĐIỀU BẠN ĐANG CẦN</span>
+              <span className="eyebrow" style={{ color: 'var(--muted)' }}>KẾT QUẢ CỦA BẠN</span>
               <button className="text-button" onClick={restartQuiz} style={{ background: 'none', border: 'none', color: 'var(--teal)', cursor: 'pointer', textDecoration: 'underline' }}>Làm lại trắc nghiệm ↻</button>
             </div>
             
@@ -271,7 +312,7 @@ export default function Home() {
             )}
 
             <div className="recommendation-heading">
-              <p className="eyebrow">03 / ĐIỂM BẮT ĐẦU GỢI Ý</p>
+              <p className="eyebrow">ĐIỂM BẮT ĐẦU GỢI Ý</p>
               <h3>{suggestedBooks.length > 1 ? "Bạn có thể chọn một trong hai hướng — hoặc kết hợp cả hai." : "Một cuốn sách để bắt đầu hành trình."}</h3>
             </div>
             <div className="result-books">
@@ -279,7 +320,7 @@ export default function Home() {
                 const book = BOOKS[id as keyof typeof BOOKS];
                 return (
                   <article className="result-book" key={id}>
-                    <BookCover variant={id === "book_vu_tru" ? "teal" : "warm-coral"} />
+                    <BookCover variant={id === "book_vu_tru" ? "teal" : "warm-coral"} sizes="(max-width: 720px) 105px, 125px" />
                     <div className="result-book-copy">
                       <span className="book-kicker">EBOOK · THỰC HÀNH CÁ NHÂN</span>
                       <h4>{book.title}</h4>
@@ -299,7 +340,7 @@ export default function Home() {
       <section className="books-section" id="books">
         <div className="section-wrap">
           <div className="section-heading centered">
-            <p className="eyebrow">04 / HAI ĐIỂM BẮT ĐẦU</p>
+            <p className="eyebrow">02 / HAI ĐIỂM BẮT ĐẦU</p>
             <h2>Mỗi người có một cánh cửa riêng <em>để trở về.</em></h2>
             <p>Không cần đọc thật nhanh. Hãy chọn cuốn sách gần với điều bạn đang cần, rồi thực hành từng chút một.</p>
           </div>
@@ -315,7 +356,8 @@ export default function Home() {
               listPrice={BOOKS.book_tinh_lang.listPrice}
               launchPrice={BOOKS.book_tinh_lang.launchPrice}
               cta="Tôi muốn bắt đầu từ sự tĩnh lặng"
-              onOrder={() => setOrder({ title: BOOKS.book_tinh_lang.title, price: BOOKS.book_tinh_lang.launchPrice })}
+              previewUrl={BOOKS.book_tinh_lang.previewUrl}
+              onOrder={() => setOrder({ title: BOOKS.book_tinh_lang.title, price: BOOKS.book_tinh_lang.launchPrice, code: "BLTL" })}
             />
             <BookCard
               variant="green"
@@ -327,7 +369,10 @@ export default function Home() {
               listPrice={BOOKS.book_vu_tru.listPrice}
               launchPrice={BOOKS.book_vu_tru.launchPrice}
               cta="Tôi muốn lắng nghe nhịp điệu riêng"
-              onOrder={() => setOrder({ title: BOOKS.book_vu_tru.title, price: BOOKS.book_vu_tru.launchPrice })}
+              previewUrl={BOOKS.book_vu_tru.previewUrl}
+              bonusUrl={BOOKS.book_vu_tru.meditationUrl}
+              bonusTitle={BOOKS.book_vu_tru.meditationTitle}
+              onOrder={() => setOrder({ title: BOOKS.book_vu_tru.title, price: BOOKS.book_vu_tru.launchPrice, code: "STVT" })}
             />
           </div>
           <div className="combo-card">
@@ -335,22 +380,31 @@ export default function Home() {
             <div className="combo-copy">
               <span className="book-kicker">DÀNH CHO BẠN MUỐN ĐI CẢ HAI HƯỚNG</span>
               <h3>{BOOKS.combo_tro_ve.title}</h3>
-              <p>{BOOKS.combo_tro_ve.description} Có kèm gợi ý thiền YouTube “Lắng nghe nhịp điệu bên trong” khi đường dẫn được bổ sung.</p>
+              <p>{BOOKS.combo_tro_ve.description}</p>
+              <p className="combo-bonus">Gồm cả bài tập thiền đi kèm Sổ tay vũ trụ cá nhân: <a href={BOOKS.book_vu_tru.meditationUrl} target="_blank" rel="noopener noreferrer">{BOOKS.book_vu_tru.meditationTitle} ↗</a></p>
             </div>
             <div className="combo-price">
               <strong>{money(BOOKS.combo_tro_ve.launchPrice)}</strong>
               <del>{money(BOOKS.combo_tro_ve.listPrice)}</del>
-              <span>Giá ra mắt dự kiến</span>
+              <span>Giá ra mắt · tiết kiệm {money(BOOKS.book_tinh_lang.launchPrice + BOOKS.book_vu_tru.launchPrice - BOOKS.combo_tro_ve.launchPrice)} so với mua lẻ</span>
             </div>
-            <button type="button" className="button button-light" onClick={() => setOrder({ title: BOOKS.combo_tro_ve.title, price: BOOKS.combo_tro_ve.launchPrice })}>Quan tâm bộ đôi <span>→</span></button>
+            <button type="button" className="button button-light" onClick={() => setOrder({ title: BOOKS.combo_tro_ve.title, price: BOOKS.combo_tro_ve.launchPrice, code: "BODOI" })}>Mua bộ đôi <span>→</span></button>
           </div>
-          <p className="pricing-note">Giá ra mắt dự kiến, có thể điều chỉnh trước khi mở bán chính thức. Các nút mua hàng hiện là vị trí chờ tích hợp thanh toán.</p>
+          <div className="buy-steps" id="how-to-buy">
+            <h3>Cách mua rất đơn giản</h3>
+            <div className="buy-steps-grid">
+              <div><span>1</span><p><strong>Chọn sách</strong>Bấm nút mua ở cuốn bạn muốn.</p></div>
+              <div><span>2</span><p><strong>Quét mã QR chuyển khoản</strong>Chuyển đúng số tiền hiển thị trong hộp thanh toán.</p></div>
+              <div><span>3</span><p><strong>Gửi ảnh chuyển khoản</strong>Nhắn qua Zalo hoặc Messenger, nhận file ebook trong ngày thanh toán.</p></div>
+            </div>
+            <p className="policy-note"><strong>Chính sách:</strong> hoàn tiền nếu bạn không đọc được sách. Vui lòng không chia sẻ file cho người khác.</p>
+          </div>
         </div>
       </section>
 
       <section className="how-section section-wrap">
         <div className="how-intro">
-          <p className="eyebrow">05 / ĐỌC VÀ THỰC HÀNH</p>
+          <p className="eyebrow">03 / ĐỌC VÀ THỰC HÀNH</p>
           <h2>Không phải để trở thành một ai khác.<br /><em>Mà để hiểu mình hơn một chút.</em></h2>
         </div>
         <div className="steps">
@@ -372,7 +426,7 @@ export default function Home() {
           />
         </div>
         <div className="about-copy">
-          <p className="eyebrow">06 / ĐÔI LỜI TỪ THANH HƯƠNG</p>
+          <p className="eyebrow">04 / ĐÔI LỜI TỪ THANH HƯƠNG</p>
           <h2>
             Tôi không có câu trả lời thay bạn.<br />
             <em style={{ color: 'var(--warm-coral)', fontStyle: 'normal' }}>Tôi tin bạn có thể lắng nghe mình.</em>
@@ -385,14 +439,17 @@ export default function Home() {
 
       <section className="faq-section section-wrap">
         <div className="section-heading">
-          <p className="eyebrow">07 / CÂU HỎI THƯỜNG GẶP</p>
+          <p className="eyebrow">05 / CÂU HỎI THƯỜNG GẶP</p>
           <h2>Một vài điều bạn có thể <em>đang tự hỏi.</em></h2>
         </div>
         <div className="faq-list">
           <details><summary>Bài trắc nghiệm có đánh giá tính cách của tôi không?</summary><p>Không. Đây là công cụ tự phản chiếu nhẹ nhàng dựa trên câu trả lời của bạn, không phải bài đánh giá tâm lý hay chẩn đoán.</p></details>
-          <details><summary>Tôi có thể có nhiều nhu cầu nổi bật cùng lúc không?</summary><p>Có. Hệ thống cho phép nhiều nhóm nhu cầu cùng nổi bật nếu điểm của từng nhóm đạt ngưỡng đã thiết lập. Kết quả không ép bạn vào một kiểu duy nhất.</p></details>
+          <details><summary>Tôi có thể có nhiều nhu cầu nổi bật cùng lúc không?</summary><p>Có. Bạn có thể thấy nhiều nhu cầu cùng nổi bật, và kết quả sẽ gợi ý hướng phù hợp với từng nhu cầu. Bạn không bị ép vào một kiểu duy nhất.</p></details>
           <details><summary>Tôi nên bắt đầu với cuốn nào?</summary><p>Hãy tham khảo phần kết quả, đọc mô tả hai cuốn sách và chọn hướng khiến bạn cảm thấy phù hợp nhất lúc này. Nếu chưa rõ, bạn có thể bắt đầu với một cuốn hoặc xem bộ đôi như một lựa chọn mở rộng.</p></details>
-          <details><summary>Làm thế nào để nhận ebook sau khi mua?</summary><p>Phần thanh toán và gửi ebook chưa được kết nối trong phiên bản này. Trước khi mở bán, cần bổ sung phương thức thanh toán, email nhận đơn và cơ chế gửi file an toàn.</p></details>
+          <details><summary>Làm thế nào để mua và nhận ebook?</summary><p>Bấm nút mua ở cuốn bạn chọn, quét mã QR để chuyển khoản, rồi gửi ảnh chuyển khoản qua Zalo hoặc Messenger của Thanh Hương. Bạn sẽ nhận file ebook trong ngày thanh toán.</p></details>
+          <details><summary>Tôi có thể đọc thử trước khi mua không?</summary><p>Có. Mỗi cuốn đều có nút “Đọc thử” để bạn xem trước một phần nội dung.</p></details>
+          <details><summary>Nếu tôi không đọc được sách thì sao?</summary><p>Bạn cứ nhắn cho Thanh Hương qua Zalo hoặc Messenger. Nếu vẫn không đọc được sách, bạn sẽ được hoàn tiền.</p></details>
+          <details><summary>Tôi có thể chia sẻ file cho bạn bè không?</summary><p>Vui lòng không chia sẻ file. Nếu bạn muốn tặng sách cho người thân, hãy nhắn Thanh Hương để được hỗ trợ.</p></details>
         </div>
       </section>
 
@@ -409,12 +466,13 @@ export default function Home() {
         <p>© {new Date().getFullYear()} Thanh Hương · Một không gian để lắng nghe chính mình.</p>
         <a href="#top">Lên đầu trang ↑</a>
       </footer>
+      <FloatingContact />
       <OrderModal item={order} onClose={closeOrder} />
     </main>
   );
 }
 
-function BookCover({ variant }: { variant: "warm-coral" | "teal" }) {
+function BookCover({ variant, sizes = "280px" }: { variant: "warm-coral" | "teal"; sizes?: string }) {
   return (
     <div style={{ width: '100%', maxWidth: '280px', minWidth: 0, margin: '0 auto' }}>
       <Image
@@ -422,7 +480,7 @@ function BookCover({ variant }: { variant: "warm-coral" | "teal" }) {
         alt={variant === "warm-coral" ? "Bìa sách Bản lĩnh tĩnh lặng" : "Bìa sách Sổ tay vũ trụ cá nhân"}
         width={280}
         height={400}
-        sizes="(max-width: 720px) 105px, 280px"
+        sizes={sizes}
         style={{
           display: 'block',
           width: '100%',
@@ -436,7 +494,7 @@ function BookCover({ variant }: { variant: "warm-coral" | "teal" }) {
 }
 
 function BookCard({
-  variant, number, title, subtitle, description, bullets, listPrice, launchPrice, cta, onOrder
+  variant, number, title, subtitle, description, bullets, listPrice, launchPrice, cta, previewUrl, bonusUrl, bonusTitle, onOrder
 }: {
   variant: "clay" | "green";
   number: string;
@@ -447,6 +505,9 @@ function BookCard({
   listPrice: number;
   launchPrice: number;
   cta: string;
+  previewUrl: string;
+  bonusUrl?: string;
+  bonusTitle?: string;
   onOrder: () => void;
 }) {
   return (
@@ -460,8 +521,15 @@ function BookCard({
         <p className="book-subtitle">{subtitle}</p>
         <p className="book-description">{description}</p>
         <ul>{bullets.map((bullet) => <li key={bullet}><span>✓</span>{bullet}</li>)}</ul>
+        {bonusUrl && bonusTitle && (
+          <p className="book-bonus">Kèm bài tập thiền: <a href={bonusUrl} target="_blank" rel="noopener noreferrer">{bonusTitle} ↗</a></p>
+        )}
         <div className="book-price-row"><div><strong>{money(launchPrice)}</strong><del>{money(listPrice)}</del></div><span>Giá ra mắt</span></div>
-        <button type="button" className="button button-outline" onClick={onOrder}>{cta} <span>→</span></button>
+        <div className="book-card-actions">
+          <button type="button" className="button button-dark" onClick={onOrder}>{cta} <span>→</span></button>
+          <a className="button button-outline" href={previewUrl} target="_blank" rel="noopener noreferrer">Đọc thử <span>↗</span></a>
+        </div>
+        <p className="book-delivery">Nhận file ebook trong ngày thanh toán.</p>
       </div>
     </article>
   );
