@@ -531,21 +531,6 @@ export default function Home() {
             <p>Không cần đọc thật nhanh. Hãy chọn cuốn sách gần với điều bạn đang cần, rồi thực hành từng chút một.</p>
           </div>
 
-          <div className="combo-card">
-            <div className="combo-symbol">✳</div>
-            <div className="combo-copy">
-              <span className="book-kicker">DÀNH CHO BẠN MUỐN ĐI CẢ HAI HƯỚNG</span>
-              <h3>{BOOKS.combo_tro_ve.title}</h3>
-              <p>{BOOKS.combo_tro_ve.description}</p>
-              <p className="combo-bonus">Gồm cả bài tập thiền đi kèm Sổ tay vũ trụ cá nhân: <a href={BOOKS.book_vu_tru.meditationUrl} target="_blank" rel="noopener noreferrer">{BOOKS.book_vu_tru.meditationTitle} ↗</a></p>
-            </div>
-            <div className="combo-price">
-              <strong>{money(BOOKS.combo_tro_ve.launchPrice)}</strong>
-              <del>{money(BOOKS.combo_tro_ve.listPrice)}</del>
-              <span>Giá ra mắt · tiết kiệm {money(BOOKS.book_tinh_lang.launchPrice + BOOKS.book_vu_tru.launchPrice - BOOKS.combo_tro_ve.launchPrice)} so với mua lẻ</span>
-            </div>
-            <button type="button" className="button button-light" onClick={() => setOrder({ title: BOOKS.combo_tro_ve.title, price: BOOKS.combo_tro_ve.launchPrice, code: "BODOI", source: "books" })}>Mua bộ đôi <span>→</span></button>
-          </div>
           <div className="books-grid">
             <BookCard
               variant="clay"
@@ -573,6 +558,21 @@ export default function Home() {
               bonusTitle={BOOKS.book_vu_tru.meditationTitle}
               onOrder={() => setOrder({ title: BOOKS.book_vu_tru.title, price: BOOKS.book_vu_tru.launchPrice, code: "STVT", source: "books" })}
             />
+          </div>
+          <div className="combo-card">
+            <div className="combo-symbol">✳</div>
+            <div className="combo-copy">
+              <span className="book-kicker">DÀNH CHO BẠN MUỐN ĐI CẢ HAI HƯỚNG</span>
+              <h3>{BOOKS.combo_tro_ve.title}</h3>
+              <p>{BOOKS.combo_tro_ve.description}</p>
+              <p className="combo-bonus">Gồm cả bài tập thiền đi kèm Sổ tay vũ trụ cá nhân: <a href={BOOKS.book_vu_tru.meditationUrl} target="_blank" rel="noopener noreferrer">{BOOKS.book_vu_tru.meditationTitle} ↗</a></p>
+            </div>
+            <div className="combo-price">
+              <strong>{money(BOOKS.combo_tro_ve.launchPrice)}</strong>
+              <del>{money(BOOKS.combo_tro_ve.listPrice)}</del>
+              <span>Giá ra mắt · tiết kiệm {money(BOOKS.book_tinh_lang.launchPrice + BOOKS.book_vu_tru.launchPrice - BOOKS.combo_tro_ve.launchPrice)} so với mua lẻ</span>
+            </div>
+            <button type="button" className="button button-light" onClick={() => setOrder({ title: BOOKS.combo_tro_ve.title, price: BOOKS.combo_tro_ve.launchPrice, code: "BODOI", source: "books" })}>Mua bộ đôi <span>→</span></button>
           </div>
           <div className="buy-steps" id="how-to-buy">
             <h3>Cách mua rất đơn giản</h3>
