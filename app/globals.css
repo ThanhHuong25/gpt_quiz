@@ -396,3 +396,6 @@ h1, h2, h3, h4 { color: var(--teal); }
   .result-combo-covers { max-width: 240px; margin: 0 auto; }
 }
 .result-combo-second { border-width: 1px; }
+
+/* Khối bộ đôi nằm ngay dưới tiêu đề mục sách, trước hai thẻ sách */
+.books-section .section-heading + .combo-card { margin-top: 0; margin-bottom: 24px; }
