@@ -399,3 +399,12 @@ h1, h2, h3, h4 { color: var(--teal); }
 
 /* Khối bộ đôi nằm ngay dưới tiêu đề mục sách, trước hai thẻ sách */
 .books-section .section-heading + .combo-card { margin-top: 0; margin-bottom: 24px; }
+
+/* ===== Trắc nghiệm từng câu một ===== */
+.quiz-nav-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; }
+.quiz-nav-row .button { cursor: pointer; }
+.quiz-nav-row .button:disabled { opacity: .45; cursor: not-allowed; }
+.quiz-hint { margin: 14px 0 0; text-align: center; color: var(--muted); font-size: 13px; }
+.question-card.step-in { animation: stepIn .28s ease; }
+@keyframes stepIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .question-card.step-in { animation: none; } }
