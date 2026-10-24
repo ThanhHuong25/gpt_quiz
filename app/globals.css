@@ -395,3 +395,4 @@ h1, h2, h3, h4 { color: var(--teal); }
   .result-combo { grid-template-columns: 1fr; padding: 18px; }
   .result-combo-covers { max-width: 240px; margin: 0 auto; }
 }
+.result-combo-second { border-width: 1px; }
