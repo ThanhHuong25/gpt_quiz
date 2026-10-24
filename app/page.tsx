@@ -27,7 +27,22 @@ const BANK = {
   accountNumber: "48629859"
 };
 
-type OrderItem = { title: string; price: number; code: string };
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+/* Gửi sự kiện thống kê (Google Analytics). Không bao giờ gửi họ tên hay số điện thoại của khách. */
+function track(event: string, params: Record<string, unknown> = {}) {
+  try {
+    window.gtag?.("event", event, params);
+  } catch {
+    /* bỏ qua lỗi thống kê */
+  }
+}
+
+type OrderItem = { title: string; price: number; code: string; source?: string };
 
 function toBankText(s: string) {
   return s
@@ -59,10 +74,17 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
     return () => window.removeEventListener("keydown", onKey);
   }, [item, onClose]);
 
+  const phoneDigitsEarly = phone.replace(/\D/g, "");
+  const readyEarly = name.trim().length >= 2 && phoneDigitsEarly.length >= 9 && phoneDigitsEarly.length <= 11;
+  const itemCode = item?.code;
+  useEffect(() => {
+    if (itemCode && readyEarly) track("order_info_ready", { item_code: itemCode });
+  }, [itemCode, readyEarly]);
+
   if (!item) return null;
 
-  const phoneDigits = phone.replace(/\D/g, "");
-  const ready = name.trim().length >= 2 && phoneDigits.length >= 9 && phoneDigits.length <= 11;
+  const phoneDigits = phoneDigitsEarly;
+  const ready = readyEarly;
   const note = ready ? `${item.code} ${phoneDigits} ${toBankText(name)}`.trim() : `${item.code} + SĐT + họ tên`;
   const message = ready
     ? `Chào Thanh Hương, mình là ${name.trim()} (SĐT ${phoneDigits}). Mình đã chuyển khoản ${money(item.price)} mua ${item.title}. Mình gửi ảnh chuyển khoản, nhờ bạn gửi file giúp mình nhé.`
@@ -78,8 +100,9 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
     }
   }
 
-  function contact(url: string) {
-    if (!ready) return;
+  function contact(url: string, channel: string) {
+    if (!ready || !item) return;
+    track("generate_lead", { method: channel, item_code: item.code, value: item.price, currency: "VND" });
     copy(message, "message");
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -139,8 +162,8 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
         <p className="order-step-title"><span>3</span> Chuyển xong? Báo cho Thanh Hương</p>
         <p className="order-hint">Bấm nút bên dưới: tin nhắn kèm tên, số điện thoại và số tiền sẽ được sao chép sẵn. Bạn chỉ cần dán vào ô chat, gửi kèm <strong>ảnh chuyển khoản</strong> và nhận file ebook <strong>trong ngày thanh toán</strong>.</p>
         <div className="order-actions">
-          <button type="button" className="button button-dark" disabled={!ready} onClick={() => contact(ZALO_URL)}>Tôi đã chuyển khoản · báo qua Zalo <span>→</span></button>
-          <button type="button" className="button button-outline" disabled={!ready} onClick={() => contact(MESSENGER_URL)}>Tôi đã chuyển khoản · báo qua Messenger <span>→</span></button>
+          <button type="button" className="button button-dark" disabled={!ready} onClick={() => contact(ZALO_URL, "zalo")}>Tôi đã chuyển khoản · báo qua Zalo <span>→</span></button>
+          <button type="button" className="button button-outline" disabled={!ready} onClick={() => contact(MESSENGER_URL, "messenger")}>Tôi đã chuyển khoản · báo qua Messenger <span>→</span></button>
         </div>
         {!ready && <p className="order-hint">Hãy nhập họ tên và số điện thoại ở bước 1 để dùng nút trên.</p>}
         {ready && copied === "message" && <p className="order-copied" aria-live="polite">✓ Đã sao chép tin nhắn. Hãy dán vào khung chat và gửi kèm ảnh chuyển khoản.</p>}
@@ -160,8 +183,8 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
 function FloatingContact() {
   return (
     <div className="floating-contact" aria-label="Liên hệ nhanh">
-      <a className="fc fc-zalo" href={ZALO_URL} target="_blank" rel="noopener noreferrer">Nhắn Zalo</a>
-      <a className="fc fc-messenger" href={MESSENGER_URL} target="_blank" rel="noopener noreferrer">Messenger</a>
+      <a className="fc fc-zalo" href={ZALO_URL} target="_blank" rel="noopener noreferrer" onClick={() => track("contact_click", { channel: "zalo", location: "floating" })}>Nhắn Zalo</a>
+      <a className="fc fc-messenger" href={MESSENGER_URL} target="_blank" rel="noopener noreferrer" onClick={() => track("contact_click", { channel: "messenger", location: "floating" })}>Messenger</a>
     </div>
   );
 }
@@ -188,19 +211,36 @@ const BRIDGE = {
 export default function Home() {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
+  const [step, setStep] = useState(0);
   const [email, setEmail] = useState("");
   const [order, setOrder] = useState<OrderItem | null>(null);
   const closeOrder = useCallback(() => setOrder(null), []);
 
+  useEffect(() => {
+    if (order) track("begin_checkout", { item_code: order.code, source: order.source ?? "unknown", value: order.price, currency: "VND" });
+  }, [order]);
+
   const answeredCount = Object.keys(answers).length;
+  const currentQuestion = QUIZ_QUESTIONS[step];
   const results = useMemo(() => calculateResults(answers), [answers]);
 
-  function chooseAnswer(questionId: number, optionIndex: number) {
+  function chooseAnswer(questionId: number, optionIndex: number, questionIndex: number) {
+    if (answeredCount === 0) track("quiz_start");
+    track("quiz_answer", { question: questionIndex + 1 });
     setAnswers((current) => ({ ...current, [questionId]: optionIndex }));
+    if (questionIndex < QUIZ_QUESTIONS.length - 1) {
+      // tự chuyển sang câu tiếp theo sau một nhịp ngắn; chỉ chuyển nếu khách vẫn đang ở câu này
+      window.setTimeout(() => setStep((s) => (s === questionIndex ? s + 1 : s)), 300);
+    }
   }
 
   function handleQuizSubmit() {
     if (answeredCount !== QUIZ_QUESTIONS.length) return;
+    const ids = results.recommendedBookIds;
+    track("quiz_complete", {
+      result_type: results.exploratory ? "explore" : ids.length > 1 ? "both" : ids[0] ?? "none",
+      salient: results.salient.join("")
+    });
     setShowResults(true);
     window.setTimeout(() => {
       document.getElementById("quiz-results")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -208,7 +248,9 @@ export default function Home() {
   }
 
   function restartQuiz() {
+    track("quiz_restart");
     setAnswers({});
+    setStep(0);
     setShowResults(false);
     document.getElementById("quiz")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -225,7 +267,7 @@ export default function Home() {
     BOOKS.book_tinh_lang.launchPrice + BOOKS.book_vu_tru.launchPrice - BOOKS.combo_tro_ve.launchPrice;
 
   const orderBook = (id: (typeof bookOrder)[number]) =>
-    setOrder({ title: BOOKS[id].title, price: BOOKS[id].launchPrice, code: BOOK_CODES[id] });
+    setOrder({ title: BOOKS[id].title, price: BOOKS[id].launchPrice, code: BOOK_CODES[id], source: "result" });
 
   const whyFor = (id: (typeof bookOrder)[number]) => {
     const dims = id === "combo_tro_ve" ? results.salient : results.salient.filter((d) => DIMENSIONS[d].bookId === id);
@@ -350,44 +392,55 @@ export default function Home() {
         </div>
 
         <div className="quiz-progress-wrap">
-          <div className="quiz-progress-label"><span>Hành trình của bạn</span><strong>{answeredCount}/{QUIZ_QUESTIONS.length}</strong></div>
+          <div className="quiz-progress-label"><span>Hành trình của bạn</span><strong>Câu {step + 1}/{QUIZ_QUESTIONS.length}</strong></div>
           <div className="progress-track"><div className="progress-fill" style={{ width: `${(answeredCount / QUIZ_QUESTIONS.length) * 100}%` }} /></div>
         </div>
 
         <div className="questions-list">
-          {QUIZ_QUESTIONS.map((question, questionIndex) => (
-            <article className="question-card" key={question.id}>
-              <div className="question-number">{String(questionIndex + 1).padStart(2, "0")}</div>
-              <div className="question-content">
-                <h3>{question.prompt}</h3>
-                <div className="options-grid">
-                  {question.options.map((option, optionIndex) => {
-                    const selected = answers[question.id] === optionIndex;
-                    return (
-                      <button
-                        type="button"
-                        key={option.label}
-                        className={`option ${selected ? "selected" : ""}`}
-                        aria-pressed={selected}
-                        onClick={() => chooseAnswer(question.id, optionIndex)}
-                      >
-                        <span className="option-radio">{selected ? "✓" : String.fromCharCode(65 + optionIndex)}</span>
-                        <span>{option.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+          <article className="question-card step-in" key={currentQuestion.id}>
+            <div className="question-number">{String(step + 1).padStart(2, "0")}</div>
+            <div className="question-content">
+              <h3>{currentQuestion.prompt}</h3>
+              <div className="options-grid">
+                {currentQuestion.options.map((option, optionIndex) => {
+                  const selected = answers[currentQuestion.id] === optionIndex;
+                  return (
+                    <button
+                      type="button"
+                      key={option.label}
+                      className={`option ${selected ? "selected" : ""}`}
+                      aria-pressed={selected}
+                      onClick={() => chooseAnswer(currentQuestion.id, optionIndex, step)}
+                    >
+                      <span className="option-radio">{selected ? "✓" : String.fromCharCode(65 + optionIndex)}</span>
+                      <span>{option.label}</span>
+                    </button>
+                  );
+                })}
               </div>
-            </article>
-          ))}
+            </div>
+          </article>
         </div>
 
-        <div className="quiz-submit-row">
-          <p>{answeredCount === QUIZ_QUESTIONS.length ? "Bạn đã trả lời tất cả câu hỏi." : `Còn ${QUIZ_QUESTIONS.length - answeredCount} câu chưa trả lời.`}</p>
-          <button className="button button-dark" onClick={handleQuizSubmit} disabled={answeredCount !== QUIZ_QUESTIONS.length}>
-            Xem kết quả của tôi <span>→</span>
-          </button>
+        <div className="quiz-nav-row">
+          {step > 0 ? (
+            <button type="button" className="button button-outline" onClick={() => setStep(step - 1)}>← Câu trước</button>
+          ) : (
+            <span />
+          )}
+          {step < QUIZ_QUESTIONS.length - 1 ? (
+            <button type="button" className="button button-dark" disabled={answers[currentQuestion.id] === undefined} onClick={() => setStep(step + 1)}>Câu tiếp <span>→</span></button>
+          ) : (
+            <button type="button" className="button button-dark" onClick={handleQuizSubmit} disabled={answeredCount !== QUIZ_QUESTIONS.length}>Xem kết quả của tôi <span>→</span></button>
+          )}
         </div>
+        <p className="quiz-hint">
+          {step < QUIZ_QUESTIONS.length - 1
+            ? "Chọn một phương án, trang sẽ tự chuyển sang câu tiếp theo."
+            : answeredCount === QUIZ_QUESTIONS.length
+              ? "Bạn đã trả lời tất cả câu hỏi."
+              : "Hãy chọn một phương án để xem kết quả."}
+        </p>
 
         {showResults && (
           <section className="results-panel" id="quiz-results" aria-live="polite" style={{ width: '100%', maxWidth: '800px', margin: '40px auto', padding: '20px' }}>
@@ -491,7 +544,7 @@ export default function Home() {
               <del>{money(BOOKS.combo_tro_ve.listPrice)}</del>
               <span>Giá ra mắt · tiết kiệm {money(BOOKS.book_tinh_lang.launchPrice + BOOKS.book_vu_tru.launchPrice - BOOKS.combo_tro_ve.launchPrice)} so với mua lẻ</span>
             </div>
-            <button type="button" className="button button-light" onClick={() => setOrder({ title: BOOKS.combo_tro_ve.title, price: BOOKS.combo_tro_ve.launchPrice, code: "BODOI" })}>Mua bộ đôi <span>→</span></button>
+            <button type="button" className="button button-light" onClick={() => setOrder({ title: BOOKS.combo_tro_ve.title, price: BOOKS.combo_tro_ve.launchPrice, code: "BODOI", source: "books" })}>Mua bộ đôi <span>→</span></button>
           </div>
           <div className="books-grid">
             <BookCard
@@ -504,7 +557,7 @@ export default function Home() {
               listPrice={BOOKS.book_tinh_lang.listPrice}
               launchPrice={BOOKS.book_tinh_lang.launchPrice}
               cta="Tôi muốn bắt đầu từ sự tĩnh lặng"
-              onOrder={() => setOrder({ title: BOOKS.book_tinh_lang.title, price: BOOKS.book_tinh_lang.launchPrice, code: "BLTL" })}
+              onOrder={() => setOrder({ title: BOOKS.book_tinh_lang.title, price: BOOKS.book_tinh_lang.launchPrice, code: "BLTL", source: "books" })}
             />
             <BookCard
               variant="green"
@@ -518,7 +571,7 @@ export default function Home() {
               cta="Tôi muốn lắng nghe nhịp điệu riêng"
               bonusUrl={BOOKS.book_vu_tru.meditationUrl}
               bonusTitle={BOOKS.book_vu_tru.meditationTitle}
-              onOrder={() => setOrder({ title: BOOKS.book_vu_tru.title, price: BOOKS.book_vu_tru.launchPrice, code: "STVT" })}
+              onOrder={() => setOrder({ title: BOOKS.book_vu_tru.title, price: BOOKS.book_vu_tru.launchPrice, code: "STVT", source: "books" })}
             />
           </div>
           <div className="buy-steps" id="how-to-buy">
