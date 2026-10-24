@@ -233,13 +233,13 @@ export default function Home() {
   };
 
   const renderComboCard = (second: boolean) => (
-    <article className={second ? "result-combo result-combo-second" : "result-combo"}>
+    <article className="result-combo">
       <div className="result-combo-covers">
         <BookCover variant="warm-coral" sizes="(max-width: 720px) 45vw, 140px" />
         <BookCover variant="teal" sizes="(max-width: 720px) 45vw, 140px" />
       </div>
       <div className="result-book-copy">
-        <span className="book-kicker">{second ? "HOẶC ĐI CẢ HAI HƯỚNG" : "LỰA CHỌN PHÙ HỢP NHẤT VỚI BẠN"}</span>
+        <span className="book-kicker">{second ? "ĐI CẢ HAI HƯỚNG CÙNG LÚC" : "LỰA CHỌN PHÙ HỢP NHẤT VỚI BẠN"}</span>
         <h4>{BOOKS.combo_tro_ve.title}</h4>
         {!second && (
           <p className="result-why">
@@ -455,26 +455,16 @@ export default function Home() {
                     : "Bạn đang cần cả hai hướng — bộ đôi là điểm bắt đầu trọn vẹn nhất."
                   : suggestedBooks.length > 1
                     ? "Bạn có thể chọn một trong hai hướng — hoặc kết hợp cả hai."
-                    : "Một cuốn sách để bắt đầu hành trình."}
+                    : "Một cuốn sách để bắt đầu — hoặc đi cả hai hướng cùng lúc."}
               </h3>
             </div>
 
-            {showCombo && (
-              <>
-                {renderComboCard(false)}
-                <p className="result-or"><span>Hoặc chọn từng cuốn</span></p>
-              </>
-            )}
+            {renderComboCard(!showCombo)}
+            <p className="result-or"><span>{showCombo ? "Hoặc chọn từng cuốn" : "Hoặc bắt đầu với một cuốn"}</span></p>
 
             <div className="result-books">
               {suggestedBooks.map((id) => renderResultBook(id))}
             </div>
-            {!showCombo && (
-              <>
-                <p className="result-or"><span>Hoặc đi cả hai hướng</span></p>
-                {renderComboCard(true)}
-              </>
-            )}
             <p className="result-disclaimer">Kết quả chỉ mang tính gợi mở để tự quan sát, không phải đánh giá tâm lý hay lời khuyên chuyên môn.</p>
           </section>
         )}
@@ -488,6 +478,21 @@ export default function Home() {
             <p>Không cần đọc thật nhanh. Hãy chọn cuốn sách gần với điều bạn đang cần, rồi thực hành từng chút một.</p>
           </div>
 
+          <div className="combo-card">
+            <div className="combo-symbol">✳</div>
+            <div className="combo-copy">
+              <span className="book-kicker">DÀNH CHO BẠN MUỐN ĐI CẢ HAI HƯỚNG</span>
+              <h3>{BOOKS.combo_tro_ve.title}</h3>
+              <p>{BOOKS.combo_tro_ve.description}</p>
+              <p className="combo-bonus">Gồm cả bài tập thiền đi kèm Sổ tay vũ trụ cá nhân: <a href={BOOKS.book_vu_tru.meditationUrl} target="_blank" rel="noopener noreferrer">{BOOKS.book_vu_tru.meditationTitle} ↗</a></p>
+            </div>
+            <div className="combo-price">
+              <strong>{money(BOOKS.combo_tro_ve.launchPrice)}</strong>
+              <del>{money(BOOKS.combo_tro_ve.listPrice)}</del>
+              <span>Giá ra mắt · tiết kiệm {money(BOOKS.book_tinh_lang.launchPrice + BOOKS.book_vu_tru.launchPrice - BOOKS.combo_tro_ve.launchPrice)} so với mua lẻ</span>
+            </div>
+            <button type="button" className="button button-light" onClick={() => setOrder({ title: BOOKS.combo_tro_ve.title, price: BOOKS.combo_tro_ve.launchPrice, code: "BODOI" })}>Mua bộ đôi <span>→</span></button>
+          </div>
           <div className="books-grid">
             <BookCard
               variant="clay"
@@ -515,21 +520,6 @@ export default function Home() {
               bonusTitle={BOOKS.book_vu_tru.meditationTitle}
               onOrder={() => setOrder({ title: BOOKS.book_vu_tru.title, price: BOOKS.book_vu_tru.launchPrice, code: "STVT" })}
             />
-          </div>
-          <div className="combo-card">
-            <div className="combo-symbol">✳</div>
-            <div className="combo-copy">
-              <span className="book-kicker">DÀNH CHO BẠN MUỐN ĐI CẢ HAI HƯỚNG</span>
-              <h3>{BOOKS.combo_tro_ve.title}</h3>
-              <p>{BOOKS.combo_tro_ve.description}</p>
-              <p className="combo-bonus">Gồm cả bài tập thiền đi kèm Sổ tay vũ trụ cá nhân: <a href={BOOKS.book_vu_tru.meditationUrl} target="_blank" rel="noopener noreferrer">{BOOKS.book_vu_tru.meditationTitle} ↗</a></p>
-            </div>
-            <div className="combo-price">
-              <strong>{money(BOOKS.combo_tro_ve.launchPrice)}</strong>
-              <del>{money(BOOKS.combo_tro_ve.listPrice)}</del>
-              <span>Giá ra mắt · tiết kiệm {money(BOOKS.book_tinh_lang.launchPrice + BOOKS.book_vu_tru.launchPrice - BOOKS.combo_tro_ve.launchPrice)} so với mua lẻ</span>
-            </div>
-            <button type="button" className="button button-light" onClick={() => setOrder({ title: BOOKS.combo_tro_ve.title, price: BOOKS.combo_tro_ve.launchPrice, code: "BODOI" })}>Mua bộ đôi <span>→</span></button>
           </div>
           <div className="buy-steps" id="how-to-buy">
             <h3>Cách mua rất đơn giản</h3>
