@@ -170,6 +170,14 @@ const bookOrder = ["book_tinh_lang", "book_vu_tru", "combo_tro_ve"] as const;
 
 const BOOK_CODES = { book_tinh_lang: "BLTL", book_vu_tru: "STVT", combo_tro_ve: "BODOI" } as const;
 
+/* Câu nối cho khách ở giai đoạn khám phá (chưa có nhu cầu nổi bật) */
+const BRIDGE_EXPLORE =
+  "Khi chưa rõ mình cần gì trước, bạn không phải chọn vội. Bộ đôi cho bạn cả hai điểm bắt đầu: một để tìm lại sự vững vàng bên trong, một để hiểu nhịp điệu riêng của mình, lại tiết kiệm hơn mua lẻ.";
+
+/* Câu nối khi bộ đôi là lựa chọn thứ hai (kết quả chỉ có một nhu cầu nổi bật) */
+const BRIDGE_SECOND =
+  "Nếu bạn muốn vừa tìm lại sự vững vàng bên trong, vừa hiểu nhịp điệu riêng của mình, bộ đôi cho bạn cả hai hướng cùng lúc, lại tiết kiệm hơn mua lẻ.";
+
 /* Câu nối giữa kết quả trắc nghiệm và cuốn sách được gợi ý */
 const BRIDGE = {
   book_tinh_lang: "Cuốn sách đồng hành cùng bạn bằng những thực hành nhỏ mỗi ngày để dừng lại, quan sát mình không phán xét và dần vững vàng hơn.",
@@ -211,9 +219,8 @@ export default function Home() {
     : ["book_tinh_lang", "book_vu_tru"];
 
   const showCombo =
-    !results.exploratory &&
-    recommendedIds.includes("book_tinh_lang") &&
-    recommendedIds.includes("book_vu_tru");
+    results.exploratory ||
+    (recommendedIds.includes("book_tinh_lang") && recommendedIds.includes("book_vu_tru"));
   const comboSaving =
     BOOKS.book_tinh_lang.launchPrice + BOOKS.book_vu_tru.launchPrice - BOOKS.combo_tro_ve.launchPrice;
 
@@ -224,6 +231,36 @@ export default function Home() {
     const dims = id === "combo_tro_ve" ? results.salient : results.salient.filter((d) => DIMENSIONS[d].bookId === id);
     return dims.map((d) => `“${DIMENSIONS[d].title.replace(/\.$/, "")}”`).join(" · ");
   };
+
+  const renderComboCard = (second: boolean) => (
+    <article className={second ? "result-combo result-combo-second" : "result-combo"}>
+      <div className="result-combo-covers">
+        <BookCover variant="warm-coral" sizes="(max-width: 720px) 45vw, 140px" />
+        <BookCover variant="teal" sizes="(max-width: 720px) 45vw, 140px" />
+      </div>
+      <div className="result-book-copy">
+        <span className="book-kicker">{second ? "HOẶC ĐI CẢ HAI HƯỚNG" : "LỰA CHỌN PHÙ HỢP NHẤT VỚI BẠN"}</span>
+        <h4>{BOOKS.combo_tro_ve.title}</h4>
+        {!second && (
+          <p className="result-why">
+            {results.exploratory
+              ? "Vì bạn đang quan tâm nhiều điều cùng lúc và chưa có nhu cầu nào nổi bật hơn hẳn."
+              : `Vì kết quả của bạn: ${whyFor("combo_tro_ve")}`}
+          </p>
+        )}
+        <p>{second ? BRIDGE_SECOND : results.exploratory ? BRIDGE_EXPLORE : BRIDGE.combo_tro_ve}</p>
+        <div className="price-line">
+          <strong>{money(BOOKS.combo_tro_ve.launchPrice)}</strong>
+          <del>{money(BOOKS.combo_tro_ve.listPrice)}</del>
+          <span className="save-badge">Tiết kiệm {money(comboSaving)} so với mua lẻ</span>
+        </div>
+        <div className="result-actions">
+          <button type="button" className="button button-dark" onClick={() => orderBook("combo_tro_ve")}>Mua bộ đôi · {money(BOOKS.combo_tro_ve.launchPrice)} <span>→</span></button>
+          <a className="button button-outline" href="#books">Xem chi tiết</a>
+        </div>
+      </div>
+    </article>
+  );
 
   const renderResultBook = (id: (typeof bookOrder)[number]) => {
     const book = BOOKS[id];
@@ -413,7 +450,9 @@ export default function Home() {
               <p className="eyebrow">ĐIỂM BẮT ĐẦU GỢI Ý</p>
               <h3>
                 {showCombo
-                  ? "Bạn đang cần cả hai hướng — bộ đôi là điểm bắt đầu trọn vẹn nhất."
+                  ? results.exploratory
+                    ? "Bạn đang quan tâm nhiều điều — bộ đôi giúp bạn khám phá cả hai hướng."
+                    : "Bạn đang cần cả hai hướng — bộ đôi là điểm bắt đầu trọn vẹn nhất."
                   : suggestedBooks.length > 1
                     ? "Bạn có thể chọn một trong hai hướng — hoặc kết hợp cả hai."
                     : "Một cuốn sách để bắt đầu hành trình."}
@@ -422,27 +461,7 @@ export default function Home() {
 
             {showCombo && (
               <>
-                <article className="result-combo">
-                  <div className="result-combo-covers">
-                    <BookCover variant="warm-coral" sizes="(max-width: 720px) 45vw, 140px" />
-                    <BookCover variant="teal" sizes="(max-width: 720px) 45vw, 140px" />
-                  </div>
-                  <div className="result-book-copy">
-                    <span className="book-kicker">LỰA CHỌN PHÙ HỢP NHẤT VỚI BẠN</span>
-                    <h4>{BOOKS.combo_tro_ve.title}</h4>
-                    <p className="result-why">Vì kết quả của bạn: {whyFor("combo_tro_ve")}</p>
-                    <p>{BRIDGE.combo_tro_ve}</p>
-                    <div className="price-line">
-                      <strong>{money(BOOKS.combo_tro_ve.launchPrice)}</strong>
-                      <del>{money(BOOKS.combo_tro_ve.listPrice)}</del>
-                      <span className="save-badge">Tiết kiệm {money(comboSaving)} so với mua lẻ</span>
-                    </div>
-                    <div className="result-actions">
-                      <button type="button" className="button button-dark" onClick={() => orderBook("combo_tro_ve")}>Mua bộ đôi · {money(BOOKS.combo_tro_ve.launchPrice)} <span>→</span></button>
-                      <a className="button button-outline" href="#books">Xem chi tiết</a>
-                    </div>
-                  </div>
-                </article>
+                {renderComboCard(false)}
                 <p className="result-or"><span>Hoặc chọn từng cuốn</span></p>
               </>
             )}
@@ -450,6 +469,12 @@ export default function Home() {
             <div className="result-books">
               {suggestedBooks.map((id) => renderResultBook(id))}
             </div>
+            {!showCombo && (
+              <>
+                <p className="result-or"><span>Hoặc đi cả hai hướng</span></p>
+                {renderComboCard(true)}
+              </>
+            )}
             <p className="result-disclaimer">Kết quả chỉ mang tính gợi mở để tự quan sát, không phải đánh giá tâm lý hay lời khuyên chuyên môn.</p>
           </section>
         )}
