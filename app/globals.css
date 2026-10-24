@@ -397,9 +397,6 @@ h1, h2, h3, h4 { color: var(--teal); }
 }
 .result-combo-second { border-width: 1px; }
 
-/* Khối bộ đôi nằm ngay dưới tiêu đề mục sách, trước hai thẻ sách */
-.books-section .section-heading + .combo-card { margin-top: 0; margin-bottom: 24px; }
-
 /* ===== Trắc nghiệm từng câu một ===== */
 .quiz-nav-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; }
 .quiz-nav-row .button { cursor: pointer; }
