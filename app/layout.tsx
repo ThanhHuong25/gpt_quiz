@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 const SITE_URL = "https://gptquiz-ten.vercel.app"; // đổi thành tên miền riêng nếu bạn có sau này
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID; // mã đo lường Google Analytics (G-XXXXXXXXXX), đặt trong cài đặt Vercel
 const TITLE = "Trở về với chính mình | Thanh Hương";
 const DESCRIPTION =
   "Một bài trắc nghiệm nhẹ nhàng giúp bạn nhận diện nhu cầu nổi bật của mình và tìm cuốn ebook phù hợp để bắt đầu.";
@@ -32,7 +34,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="vi">
-      <body>{children}</body>
+      <body>
+        {children}
+        {GA_ID && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+            </Script>
+          </>
+        )}
+      </body>
     </html>
   );
 }
