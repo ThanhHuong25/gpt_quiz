@@ -381,3 +381,17 @@ h1, h2, h3, h4 { color: var(--teal); }
 .order-form input:focus { outline: 2px solid var(--lavender); outline-offset: 1px; border-color: var(--lavender); }
 .order-qr-caption { margin: -4px 0 12px; text-align: center; color: var(--muted); font-size: 12px; line-height: 1.6; }
 .order-actions .button:disabled, .order-copy-message:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ===== Kết quả: nút mua, câu nối, bộ đôi ===== */
+.result-why { margin: 0 0 8px; color: var(--teal); font-size: 13px; font-style: italic; line-height: 1.6; }
+.result-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.result-actions .button { cursor: pointer; }
+.save-badge { display: inline-block; margin-left: 10px; padding: 3px 10px; border-radius: 999px; background: #f6e2da; color: var(--coral-deep); font-size: 12px; font-weight: 700; }
+.result-combo { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: center; margin-bottom: 8px; padding: 24px; background: var(--paper); border: 2px solid var(--coral); border-radius: 14px; }
+.result-combo-covers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.result-or { display: flex; align-items: center; gap: 14px; margin: 22px 0 18px; color: var(--muted); font-size: 13px; }
+.result-or::before, .result-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+@media (max-width: 720px) {
+  .result-combo { grid-template-columns: 1fr; padding: 18px; }
+  .result-combo-covers { max-width: 240px; margin: 0 auto; }
+}
