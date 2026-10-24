@@ -373,3 +373,11 @@ h1, h2, h3, h4 { color: var(--teal); }
 .combo-bonus a { color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .book-bonus { margin: 0 0 14px; padding: 10px 12px; background: var(--lavender-soft); border-radius: 8px; font-size: 13px; line-height: 1.6; color: var(--muted); }
 .book-bonus a { color: var(--teal); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.order-copy-message { width: 100%; justify-content: center; margin: 0 0 12px; cursor: pointer; }
+
+/* ===== Form nhập thông tin & QR động ===== */
+.order-form { display: grid; gap: 10px; margin-bottom: 4px; }
+.order-form input { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font: 15px var(--sans); color: var(--ink); }
+.order-form input:focus { outline: 2px solid var(--lavender); outline-offset: 1px; border-color: var(--lavender); }
+.order-qr-caption { margin: -4px 0 12px; text-align: center; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.order-actions .button:disabled, .order-copy-message:disabled { opacity: .45; cursor: not-allowed; }
