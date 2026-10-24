@@ -29,12 +29,29 @@ const BANK = {
 
 type OrderItem = { title: string; price: number; code: string };
 
+function toBankText(s: string) {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .replace(/[^a-zA-Z0-9 ]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toUpperCase()
+    .slice(0, 20);
+}
+
 function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => void }) {
   const [copied, setCopied] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [qrFailed, setQrFailed] = useState(false);
 
   useEffect(() => {
     if (!item) return;
     setCopied(null);
+    setQrFailed(false);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -44,8 +61,16 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
 
   if (!item) return null;
 
-  const message = `Chào Thanh Hương, mình đã chuyển khoản ${money(item.price)} mua ${item.title}. Mình gửi ảnh chuyển khoản, nhờ bạn gửi file giúp mình nhé.`;
-  const note = `${item.code} + họ tên + số điện thoại của bạn`;
+  const phoneDigits = phone.replace(/\D/g, "");
+  const ready = name.trim().length >= 2 && phoneDigits.length >= 9 && phoneDigits.length <= 11;
+  const note = ready ? `${item.code} ${phoneDigits} ${toBankText(name)}`.trim() : `${item.code} + SĐT + họ tên`;
+  const message = ready
+    ? `Chào Thanh Hương, mình là ${name.trim()} (SĐT ${phoneDigits}). Mình đã chuyển khoản ${money(item.price)} mua ${item.title}. Mình gửi ảnh chuyển khoản, nhờ bạn gửi file giúp mình nhé.`
+    : "";
+  const dynamicQr =
+    ready && !qrFailed
+      ? `https://img.vietqr.io/image/${BANK.bankName}-${BANK.accountNumber}-compact2.png?amount=${item.price}&addInfo=${encodeURIComponent(note)}&accountName=${encodeURIComponent(BANK.accountName)}`
+      : null;
 
   function copy(text: string, key: string) {
     if (navigator.clipboard?.writeText) {
@@ -54,6 +79,7 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
   }
 
   function contact(url: string) {
+    if (!ready) return;
     copy(message, "message");
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -72,10 +98,27 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
         <h3 id="order-title">{item.title}</h3>
         <p className="order-price">{money(item.price)}</p>
 
-        <p className="order-step-title"><span>1</span> Quét mã hoặc chuyển khoản</p>
-        <div className="order-qr">
-          <Image src={QR_DATA_URI} unoptimized alt={`Mã QR chuyển khoản ${BANK.bankName} - ${BANK.accountName}`} width={520} height={628} />
+        <p className="order-step-title"><span>1</span> Nhập thông tin của bạn</p>
+        <div className="order-form">
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Họ và tên" autoComplete="name" aria-label="Họ và tên" />
+          <input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Số điện thoại (Zalo)" autoComplete="tel" aria-label="Số điện thoại" />
         </div>
+
+        <p className="order-step-title"><span>2</span> Quét mã để chuyển khoản</p>
+        <div className="order-qr">
+          {dynamicQr ? (
+            <Image key="dynamic" src={dynamicQr} unoptimized alt={`Mã QR chuyển khoản ${money(item.price)}`} width={600} height={600} onError={() => setQrFailed(true)} />
+          ) : (
+            <Image key="static" src={QR_DATA_URI} unoptimized alt={`Mã QR chuyển khoản ${BANK.bankName} - ${BANK.accountName}`} width={520} height={628} />
+          )}
+        </div>
+        <p className="order-qr-caption">
+          {dynamicQr
+            ? "Mã QR đã điền sẵn số tiền và nội dung. Quét là xong."
+            : ready
+              ? "Hãy chuyển đúng số tiền và nội dung bên dưới."
+              : "Nhập tên và số điện thoại ở bước 1 để có nội dung chuyển khoản."}
+        </p>
         <dl className="order-bank">
           <div><dt>Ngân hàng</dt><dd>{BANK.bankName}</dd></div>
           <div><dt>Chủ tài khoản</dt><dd>{BANK.accountName}</dd></div>
@@ -87,20 +130,26 @@ function OrderModal({ item, onClose }: { item: OrderItem | null; onClose: () => 
             <dt>Số tiền</dt>
             <dd>{money(item.price)} <button type="button" className="copy-chip" onClick={() => copy(String(item.price), "amount")}>{copied === "amount" ? "Đã chép ✓" : "Sao chép"}</button></dd>
           </div>
-          <div><dt>Nội dung</dt><dd>{note}</dd></div>
+          <div>
+            <dt>Nội dung</dt>
+            <dd>{note} {ready && <button type="button" className="copy-chip" onClick={() => copy(note, "note")}>{copied === "note" ? "Đã chép ✓" : "Sao chép"}</button>}</dd>
+          </div>
         </dl>
 
-        <p className="order-step-title"><span>2</span> Gửi ảnh chuyển khoản để nhận file</p>
-        <p className="order-hint">Sau khi chuyển khoản, hãy nhắn cho Thanh Hương kèm <strong>ảnh chụp màn hình chuyển khoản</strong>. Bạn sẽ nhận file ebook <strong>trong ngày thanh toán</strong>.</p>
-        <p className="order-hint">Tin nhắn mẫu để gửi:</p>
-        <blockquote className="order-message">{message}</blockquote>
-        <button type="button" className="button button-outline order-copy-message" onClick={() => copy(message, "message")}>{copied === "message" ? "Đã sao chép ✓" : "Sao chép tin nhắn"}</button>
-        <p className="order-hint">Bấm Zalo hoặc Messenger bên dưới để mở cuộc trò chuyện, rồi dán tin nhắn vào ô chat (giữ ô chat, chọn Dán) và đính kèm ảnh chuyển khoản. Nếu Zalo mở trang cá nhân, hãy bấm “Nhắn tin”.</p>
+        <p className="order-step-title"><span>3</span> Chuyển xong? Báo cho Thanh Hương</p>
+        <p className="order-hint">Bấm nút bên dưới: tin nhắn kèm tên, số điện thoại và số tiền sẽ được sao chép sẵn. Bạn chỉ cần dán vào ô chat, gửi kèm <strong>ảnh chuyển khoản</strong> và nhận file ebook <strong>trong ngày thanh toán</strong>.</p>
         <div className="order-actions">
-          <button type="button" className="button button-dark" onClick={() => contact(ZALO_URL)}>Gửi qua Zalo <span>→</span></button>
-          <button type="button" className="button button-outline" onClick={() => contact(MESSENGER_URL)}>Gửi qua Messenger <span>→</span></button>
+          <button type="button" className="button button-dark" disabled={!ready} onClick={() => contact(ZALO_URL)}>Tôi đã chuyển khoản · báo qua Zalo <span>→</span></button>
+          <button type="button" className="button button-outline" disabled={!ready} onClick={() => contact(MESSENGER_URL)}>Tôi đã chuyển khoản · báo qua Messenger <span>→</span></button>
         </div>
-        {copied === "message" && <p className="order-copied" aria-live="polite">✓ Đã sao chép tin nhắn. Hãy dán vào khung chat.</p>}
+        {!ready && <p className="order-hint">Hãy nhập họ tên và số điện thoại ở bước 1 để dùng nút trên.</p>}
+        {ready && copied === "message" && <p className="order-copied" aria-live="polite">✓ Đã sao chép tin nhắn. Hãy dán vào khung chat và gửi kèm ảnh chuyển khoản.</p>}
+        {ready && (
+          <>
+            <blockquote className="order-message">{message}</blockquote>
+            <button type="button" className="button button-outline order-copy-message" onClick={() => copy(message, "message")}>{copied === "message" ? "Đã sao chép ✓" : "Sao chép tin nhắn"}</button>
+          </>
+        )}
 
         <p className="order-policy">Hoàn tiền nếu bạn không đọc được sách. Vui lòng không chia sẻ file cho người khác.</p>
       </div>
@@ -396,8 +445,8 @@ export default function Home() {
             <h3>Cách mua rất đơn giản</h3>
             <div className="buy-steps-grid">
               <div><span>1</span><p><strong>Chọn sách</strong>Bấm nút mua ở cuốn bạn muốn.</p></div>
-              <div><span>2</span><p><strong>Quét mã QR chuyển khoản</strong>Chuyển đúng số tiền hiển thị trong hộp thanh toán.</p></div>
-              <div><span>3</span><p><strong>Gửi ảnh chuyển khoản</strong>Nhắn qua Zalo hoặc Messenger, nhận file ebook trong ngày thanh toán.</p></div>
+              <div><span>2</span><p><strong>Nhập tên, số điện thoại và quét QR</strong>Mã QR đã điền sẵn số tiền và nội dung.</p></div>
+              <div><span>3</span><p><strong>Bấm “Tôi đã chuyển khoản”</strong>Gửi ảnh chuyển khoản qua Zalo hoặc Messenger, nhận file ebook trong ngày thanh toán.</p></div>
             </div>
             <p className="policy-note"><strong>Chính sách:</strong> hoàn tiền nếu bạn không đọc được sách. Vui lòng không chia sẻ file cho người khác.</p>
           </div>
@@ -448,7 +497,7 @@ export default function Home() {
           <details><summary>Bài trắc nghiệm có đánh giá tính cách của tôi không?</summary><p>Không. Đây là công cụ tự phản chiếu nhẹ nhàng dựa trên câu trả lời của bạn, không phải bài đánh giá tâm lý hay chẩn đoán.</p></details>
           <details><summary>Tôi có thể có nhiều nhu cầu nổi bật cùng lúc không?</summary><p>Có. Bạn có thể thấy nhiều nhu cầu cùng nổi bật, và kết quả sẽ gợi ý hướng phù hợp với từng nhu cầu. Bạn không bị ép vào một kiểu duy nhất.</p></details>
           <details><summary>Tôi nên bắt đầu với cuốn nào?</summary><p>Hãy tham khảo phần kết quả, đọc mô tả hai cuốn sách và chọn hướng khiến bạn cảm thấy phù hợp nhất lúc này. Nếu chưa rõ, bạn có thể bắt đầu với một cuốn hoặc xem bộ đôi như một lựa chọn mở rộng.</p></details>
-          <details><summary>Làm thế nào để mua và nhận ebook?</summary><p>Bấm nút mua ở cuốn bạn chọn, quét mã QR để chuyển khoản, rồi gửi ảnh chuyển khoản qua Zalo hoặc Messenger của Thanh Hương. Bạn sẽ nhận file ebook trong ngày thanh toán.</p></details>
+          <details><summary>Làm thế nào để mua và nhận ebook?</summary><p>Bấm nút mua ở cuốn bạn chọn, nhập họ tên và số điện thoại, quét mã QR để chuyển khoản, rồi bấm “Tôi đã chuyển khoản” để báo cho Thanh Hương qua Zalo hoặc Messenger kèm ảnh chuyển khoản. Bạn sẽ nhận file ebook trong ngày thanh toán.</p></details>
           <details><summary>Nếu tôi không đọc được sách thì sao?</summary><p>Bạn cứ nhắn cho Thanh Hương qua Zalo hoặc Messenger. Nếu vẫn không đọc được sách, bạn sẽ được hoàn tiền.</p></details>
           <details><summary>Tôi có thể chia sẻ file cho bạn bè không?</summary><p>Vui lòng không chia sẻ file. Nếu bạn muốn tặng sách cho người thân, hãy nhắn Thanh Hương để được hỗ trợ.</p></details>
         </div>
